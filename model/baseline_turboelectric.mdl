@@ -26,115 +26,156 @@ Element Generator Gen1 {
 	SpecificPower=13.;
 	frequency=400; // Hz
 	#include <STARCABLmotorGenerator.map>
+	
 }
 
 Element Cable Cable3 {
 	length=28.3464 / 100.; 	
 	//R=4.3245e-6;
+	L = 9.84e-5 * length / 60. / 2. / PI; 
 	R=.010763 * length * 3.28 / 1000.; //3.28 converts length in m to length in ft.  Overall units are ohms
-	L=.0000796 * (length * 3.28)/60./2./PI / 1000.; //3.28 converts length in m to length in ft. Overall units are H.
+	//L=.0000796 * (length * 3.28)/60./2./PI / 1000.; //3.28 converts length in m to length in ft. Overall units are H.
+	//void postexecute)
+	
+	
+	
 }
 
 Element Rectifier Rect1 {
 	effDes = .95;
 	pwrDes = 12000.;
-	#include <modelInverterRectifier.map>
 	frequency = 400.;
+	#include <modelInverterRectifier.map>
+	
+	
 }
 
 
 Element Cable Cable1 {
 	length=28.3464; 	
-	//R=4.3245e-6;
-	R=.010763 * length * 3.28 / 1000.; //3.28 converts length in m to length in ft.  Overall units are ohms
+	R=4.3245e-6;
+	//R=.010763 * length * 3.28 / 1000.; //3.28 converts length in m to length in ft.  Overall units are ohms
 	L=.0000796 * (length * 3.28)/60./2./PI / 1000.; //3.28 converts length in m to length in ft. Overall units are H.
+	
+	
 }
 
 Element Inverter Inv1 {
-	effDes = .95;
+	effDes = .96;
 	pwrDes = 12000.;
-	#include <modelInverterRectifier.map>
 	frequency=400;
+	#include <modelInverterRectifier.map>
+	
 }
 
 Element Cable Cable2 {
 	length=28.3464 / 100.; 
 	//R=4.3245e-6;	
+	L = 9.84e-5 * length / 60. / 2. / PI; 
 	R=.010763 * length * 3.28 / 1000.; //3.28 converts length in m to length in ft.  Overall units are ohms
-	L=.0000796 * (length * 3.28)/60./2./PI / 1000.; //3.28 converts length in m to length in ft. Overall units are H.
-	void postexecute() {
-	}
+	//L=.0000796 * (length * 3.28)/60./2./PI / 1000.; //3.28 converts length in m to length in ft. Overall units are H.
+	
 }
 
 Element Motor EM1 {
 	 effDes=0.96;
-	 powerfactor=1.0;
+	 powerfactor=.9;
 	 SpecificPower=13.0; 
 	 trqDes=55144.0; 
 	 frequency = 400.;
-	 //Vreal = 1000.;
+	 Vreal = 949.9;
 	 #include <STARCABLmotorGenerator.map>
+	 void postexecute() {
+		//cout << "voltage in: " << Pin << " voltage out: " << Pout << endl;
+	}
+	 
 }
 
 
 /**************************
  Electric Motor Connections
 **************************/
+/*
 Element FlowStart Atm{
 	Pt=14.696;
 	Tt=518.67;
 	W=4394.74/20;
 }
 
-/*Element Compressor Prop{
+Element Compressor Prop{
 	#include "fanE3.map";
 	PRdes=1.4;
 	effDes=0.93;	
-}*/
+}
+Element InletStart Prop_start{
+	//W_in = 4394.74/20;
+	W_in = 220.;
+}
+
+Element Inlet Prop_inlet{
+	eRamBase = .995;
+}
 
 Element Propeller Prop{
 	CT = 1.;
-	UtipDes = 150;
+	inertia = 1.;
+	UtipDes = 150.;
 	pwrLoadDes = 5.;
-	pwr = 3000.;
+	pwr = 3500.;
 }
 
 Element FlowEnd dump{
 };
+*/
 
 
 Element Shaft Propulsor_Shaft {
-	Nmech=4000;   // rpm
-	ShaftInputPort Sh1_I, Sh_Prop;
+	Nmech=10000;   // rpm
+	ShaftInputPort Sh1_I;
+	HPX = 3500.;
+	void postexecute() {
+		//cout << "compressor shaft: " << HPX << endl;
+	}
 }
 
 /**************************
  Turbine Engine / Generator  Connections
 **************************/
+/*
 Element FlowStart TurbineAtm{
 	Pt=500;
 	Tt=2200;
 	W=500;
 	FAR = .02;
 }
+// Element Ambient ambient{
+// 	alt_in = 0.;
+// 	MN_in = .25;
+// }
+
+// Element InletStart Turb_start{
+// 	W_in = 220.;
+// }
+
+// Element Inlet Turb_inlet{
+// 	eRamBase = .995;
+// }
 
 Element Turbine Turb{
 	#include "lptE3.map";	
 	PRbase=2;
-	effDes=0.9;
-	void postexecute() {
-		cout << PRbase << "turb.PRbase" << endl;
-	}
-
+	effDes=0.95;
+	
 }
 
 Nozzle Noz{
   PsExh = 14.;
 }
 
-Element FlowEnd Turbinedump{
-};
 
+Element FlowEnd Turbinedump{
+}
+*/
 
 Independent turbPR{
 	varName="Turb.PRdes";
@@ -148,9 +189,15 @@ Dependent MotorAngle{
 
 
 Element Shaft Turbine_Shaft {
-	Nmech=4000;   // rpm
-	ShaftInputPort Sh1_I, Sh_Turbine;	
+	Nmech=10000;   // rpm
+	ShaftInputPort Sh1_I;
+	HPX = -4000.;
+	void postexecute() {
+		//cout << "turbine shaft: " << HPX << endl;
+	}	
 }
+
+Independent turbine_pwr{varName = "Turbine_Shaft.HPX";}
 
 setOption("ElectricPowerType","AC3");
 
@@ -158,26 +205,30 @@ setOption("ElectricPowerType","AC3");
 //-------------------------------------------------------------------------------------------------
 // Component Linkages
 //-------------------------------------------------------------------------------------------------
-linkPorts( "Propulsor_Shaft.Sh1_I"  , "EM1.Sh_O"          	, "Shaft_Motor1" );
+//turbine:
+// linkPorts("Turb_start.Fl_O", "Turb_inlet.Fl_I", "St00");
+//linkPorts( "TurbineAtm.Fl_O"        , "Turb.Fl_I"           , "St00-St10");
+//linkPorts( "Turb.Fl_O"              , "Noz.Fl_I"    , "St10-End0");
+//linkPorts("Noz.Fl_O", "Turbinedump.Fl_I", "St11");
+
+//Prop:
+//linkPorts("Prop_start.Fl_O", "Prop_inlet.Fl_I", "St01");
+//linkPorts( "Atm.Fl_O"               , "Prop.Fl_I"           , "St0-St1");
+//linkPorts( "Prop.Fl_O"              , "dump.Fl_I"           ,  "St1-St2");
+
+//Shafts:
+//linkPorts( "Turb.Sh_O"        		, "Turbine_Shaft.Sh_Turbine" , "Turb-to-Shaft");
+linkPorts( "Gen1.Sh_O"    ,"Turbine_Shaft.Sh1_I" , "Gen1-to-Shaft");
+linkPorts( "EM1.Sh_O"  ,      "Propulsor_Shaft.Sh1_I"     	, "Shaft_Motor1" );
+//linkPorts( "Prop.Sh_O"              , "Propulsor_Shaft.Sh_Prop" , "Prop-to-Shaft");
+
+//Electrical ports:
 linkPortI( "Gen1.EP_O", "Cable3.EP_I");
 linkPortI( "Cable3.EP_O", "Rect1.EP_I");
 linkPortI( "Rect1.EP_O", "Cable1.EP_I");
 linkPortI( "Cable1.EP_O", "Inv1.EP_I");
 linkPortI( "Inv1.EP_O", "Cable2.EP_I" );
 linkPortI( "Cable2.EP_O", "EM1.EP_I" );
-
-
-linkPorts( "Atm.Fl_O"               , "Prop.Fl_I"           , "St0-St1");
-linkPorts( "Prop.Fl_O"              , "Noz.Fl_I"           ,  "St1-St2");
-linkPorts( "Noz.Fl_O"              ,  "dump.Fl_I"           , "St2-End");
-
-//
-linkPorts( "Prop.Sh_O"              , "Propulsor_Shaft.Sh_Prop" , "Prop-to-Shaft");
-linkPorts( "TurbineAtm.Fl_O"        , "Turb.Fl_I"           , "St00-St10");
-linkPorts( "Turb.Fl_O"              , "Turbinedump.Fl_I"    , "St10-End0");
-linkPorts( "Turb.Sh_O"        		, "Turbine_Shaft.Sh_Turbine" , "Turb-to-Shaft");
-linkPorts( "Turbine_Shaft.Sh1_I"    , "Gen1.Sh_O", "Gen1-to-Shaft");
-
 
 solverSequence.remove( "Gen1" );
 solverSequence.remove( "EM1" );
@@ -186,6 +237,30 @@ solverSequence.remove( "Propulsor_Shaft" );
 solverSequence.remove( "Rect1" );
 solverSequence.remove( "Inv1" );
 
+//solverSequence.remove( "Turbinedump" );
+//solverSequence.remove( "Turb_start" );
+//solverSequence.remove( "TurbineAtm" );
+//solverSequence.remove( "Turb" );
+//solverSequence.remove( "Prop_inlet" );
+//solverSequence.remove( "dump" );
+//solverSequence.remove( "Prop" );
+//solverSequence.remove( "Atm" );
+solverSequence.remove( "Cable3" );
+solverSequence.remove( "Cable1" );
+solverSequence.remove( "Cable2" );
+
+
+//solverSequence.append("Turb_start");
+//solverSequence.append("TurbineAtm");
+//solverSequence.append("Turb");
+//solverSequence.append("Turbinedump");
+solverSequence.append("Cable3");
+solverSequence.append("Cable1");
+solverSequence.append("Cable2");
+//solverSequence.append("Prop_start");
+//solverSequence.append("Atm");
+//solverSequence.append("Prop");
+//solverSequence.append("dump");
 solverSequence.append( "Gen1" );
 solverSequence.append( "EM1" );
 solverSequence.append( "Turbine_Shaft" );
@@ -194,15 +269,14 @@ solverSequence.append( "Rect1" );
 solverSequence.append( "Inv1" );
 
 
-solver.debugLevel = "ITERATION_DETAILS";
-solver.diagnosticFile = "soler.bad";
+//solver.debugLevel = "ITERATION_DETAILS";
+//solver.diagnosticFile = "soler.bad";
 
 
 Inv1{
   Vreal = 950;  //guess value
   Vimag = 0;  //guess value		
 }
-
 
 Rect1{
   Vreal = 999.999999;  //guess value

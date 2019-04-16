@@ -39,39 +39,37 @@ fine, imprisonment, or both.
 On design
 ************************/
 
-/*Turb.PRbase = 
-EM1.Vimag = 
-EM1.Vreal = 
-*/
-
 setOption("switchDes","DESIGN"); 
 autoSolverSetup();
 
 solver.debugLevel = "ITERATION_DETAILS";
-solver.diagnosticFile = "solver.bad";
-solver.maxIterations=10000;
-solver.maxJacobians=5000;
-/*
+//solver.solutionMode = "ONE_PASS";
+solver.diagnosticFile = "mySolverOutput";
+solver.maxIterations=1000;
+solver.maxJacobians=1000;
+
 Independent prop_pwr{varName = "Prop.pwr";}
 Dependent target_pwr{
   eq_lhs = "15000.";
   eq_rhs = "Turb.pwr";
 }
-*/
+
 //solver.addIndependent("prop_pwr");
 //solver.addDependent("target_pwr");
-solver.diagnosticFile = "mySolverOutput";
-solver.debugLevel = "ITERATION_DETAILS";
-//solver.clear();
+
+
+//cout << solverSequence << endl;
+solver.addIndependent("turbine_pwr");
+cout << solver.list("Independent", TRUE) << endl;
+cout << solver.list("Dependent", TRUE) << endl;
+
 
 run();
 
 page.display();  // output data to out file
-
 quit();
 
 //page_runtime.display(); // output data to cmd window
-real Turb_speed = Turb.Np;
 
 cout << "Turbine PR " << Turb.Fl_I.Pt/Turb.Fl_O.Pt << " Nozzle Thrust " << Noz.Fg << endl;
 
@@ -87,7 +85,6 @@ Independent ind_AtmW{
 }
 
 Dependent corr_speed{
-  //eq_lhs = "Turb_speed";
   eq_lhs = "84.";
   eq_rhs = "Turb.Np";
 }
@@ -97,8 +94,8 @@ solver.addIndependent( "ind_AtmW" );
 solver.removeIndependent( "Propulsor_Shaft.ind_Nmech" );
 //Propulsor_Shaft.Nmech*=.9;
 
-solver.addDependent("corr_speed");
-solver.addIndependent("prop_pwr");
+//solver.addDependent("corr_speed");
+//solver.addIndependent("prop_pwr");
 solver.maxIterations = 10000;
 
 
