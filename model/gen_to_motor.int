@@ -25,13 +25,13 @@ class Source extends Element{
 
 class Sink extends Element{
     ElectricInputPort EP_I;
-
+    real pwr;
+    real I;
+    real V;
     //EP_I.setIVRMS(EP_I.I.r, EP_I.I.j, 1., EP_I.V.j);
-    void calculate(){
-        real I;
-        real pwr;
+    void calculate(){        
         pwr = 500.;
-        real V;
+        
         V = EP_I.V.r;
         
         if(V == 0){
@@ -87,19 +87,33 @@ Element BasicLoad cable1{
 	R = 0.017449748;    
 }
 
-Element Sink sink{
+Element Motor motor{
+   effDes = .96;
+   powerfactor = .9;
+   SpecificPower = 13.;
+   trq = 55144.;
+   frequency = 400.;
+   Vreal = 1000.; 
+   #include <STARCABLmotorGenerator.map>
 }
 
+Element Shaft motorShaft{
+    Nmech = 4000.;
+    ShaftInputPort motorlink;
+    HPX = -670.511;
+}
 //--------------------------------------------------------
 // link it up
 //--------------------------------------------------------
 linkPortI( "generator.EP_O", "cable1.EP_I");
 linkPortI("cable1.EP_O", "bus1.EP_I");
-linkPortI("bus1.EP_O", "sink.EP_I");
+linkPortI("bus1.EP_O", "motor.EP_I");
 
 linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");
 linkPorts("generator.Sh_O", "Turbine_Shaft.genlink", "generatorpwr");
+linkPorts("motor.Sh_O", ")
 
 linkPorts("TurbineAtm.Fl_O", "Turb.Fl_I", "stat1");
 linkPorts("Turb.Fl_O", "Noz.Fl_I", "stat2");
 linkPorts("Noz.Fl_O", "Turbinedump.Fl_I", "stat3");
+

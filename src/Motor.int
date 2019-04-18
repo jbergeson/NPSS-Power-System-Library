@@ -1,4 +1,4 @@
-// ****************************************************************************
+        // ****************************************************************************
 // * NASA Glenn Research Center
 // * 21000 Brookpark Rd
 // * Cleveland, OH 44135
@@ -218,6 +218,7 @@ class Motor extends Element {
 
 	void variableChanged(string name, any oldVal){
 		if(name == "switchDes"){
+			/*
 			if(switchDes == DESIGN){
 				ind_trqTemp.autoSetup = FALSE;
 				dep_trq_map.autoSetup = FALSE;
@@ -227,6 +228,7 @@ class Motor extends Element {
 				ind_trqTemp.autoSetup = TRUE;
 				dep_trq_map.autoSetup = TRUE;
 			}
+			*/
 		}
 	} // end variableChanged()
 
@@ -238,7 +240,7 @@ class Motor extends Element {
 		
 		Speed=Sh_O.Nmech;
 		//EP_I.copyport();
-		Pin = EP_I.S.r;
+		//Pin = EP_I.S.r;
 		Current = EP_I.I.mag;
 		
 		if ( switchDes == "DESIGN" ){
@@ -249,10 +251,10 @@ class Motor extends Element {
 			Eff = effDes;
 
 			// compute power to the load
-			Pout = Pin * Eff;
+			//Pout = Pin * Eff;
 
 			// Compute mass based on assumed specific power.
-			Mass=Pout / SpecificPower;
+			//Mass=Pout / SpecificPower;
 
 			// get design values 
 			Ndes = Sh_O.Nmech;
@@ -267,7 +269,7 @@ class Motor extends Element {
 			// determine resistance 
 			motorResistance =  Loss_r / 3 / Current**2;
 		}
-
+		/*
 		//set efficiency value
 		if(!S_map.isEmpty()){
 			S_map.execute();
@@ -275,8 +277,8 @@ class Motor extends Element {
 		else{
 			effBase = effDes;
 		}
-
-		Eff = effBase;
+		*/
+		Eff = effDes;
 
 		if ( switchDes == "OFFDESIGN" ){	
 			//*****************************

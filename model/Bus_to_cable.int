@@ -14,13 +14,10 @@ class Source extends Element{
     ElectricOutputPort EP_O;
 
     //EP_O.setIVRMS(0.,0.,208.,0.);
-    real Ireal = 0.;
-    real Iimag = 0.;
-    real Vreal = 208.;
-    //cout << Vreal << endl;
-    real Vimag = 0.;
+    real Vreal;
+    Vreal = 208.;
     void calculate(){
-		EP_O.setIVRMS(EP_O.I.r, EP_O.I.j, 208., EP_O.V.j);        
+		EP_O.setIVRMS(EP_O.I.r, EP_O.I.j, Vreal, EP_O.V.j);        
     }
 }
 
@@ -34,11 +31,12 @@ class Sink extends Element{
         pwr = 500.;
         real V;
         V = EP_I.V.r;
+        
         if(V == 0){
             V = 1.;
+            cout << "\n\n\nI ran!\n\n\n" << endl;
         }
         I = pwr / V;
-        cout << I << endl;
 		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
     }
 }
@@ -70,6 +68,7 @@ Element Bus bus1{
 
 Element BasicLoad cable1{
 	R = 0.017449748;
+    R = 1.;
     void postexecute() {
             cout << "post.cable.input " << EP_I.V.r << endl;
             cout << "post.cable.output " << EP_O.V.r << endl;

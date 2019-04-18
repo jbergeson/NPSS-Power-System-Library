@@ -28,6 +28,7 @@ fine, imprisonment, or both.
 // select model
 #include "gen_to_motor.int"
 
+setOption("switchDes","DESIGN"); 
 autoSolverSetup();
 
 //---------------------------------------------------------
@@ -57,7 +58,7 @@ solverSequence.append("bus1");
 
 //solverSequence.append("bus2");
 Independent turbine_power{varName = "Turb.PRbase";}
-solver.addIndependent("turbine_power");
+//solver.addIndependent("turbine_power");
 cout << solverSequence << endl;
 cout << solver.list("Independent", TRUE) << endl;
 cout << solver.list("Dependent", TRUE) << endl;
@@ -65,3 +66,28 @@ cout << solver.list("Dependent", TRUE) << endl;
 run();
 
 page.display();  // output data to out file
+
+setOption("switchDes","OFFDESIGN"); 
+
+autoSolverSetup();
+
+solverSequence.remove("bus1");
+//solverSequence.remove("source");
+solverSequence.remove("sink");
+solverSequence.remove("cable1");
+
+
+//solverSequence.append("source");
+solverSequence.append("cable1");
+solverSequence.append("sink");
+solverSequence.append("bus1");
+
+Independent AtmW{varName = "TurbineAtm.W";}
+solver.addIndependent("AtmW");
+
+cout << solver.list("Independent", TRUE) << endl;
+cout << solver.list("Dependent", TRUE) << endl;
+
+run();
+
+page.display();
