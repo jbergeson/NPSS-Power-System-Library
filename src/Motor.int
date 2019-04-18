@@ -141,7 +141,10 @@ class Motor extends Element {
 		allowedValues = { "DESIGN", "OFFDESIGN" } ;
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
-	}
+	}\
+
+	real V;
+	real I;
 	
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -254,7 +257,7 @@ class Motor extends Element {
 			//Pout = Pin * Eff;
 
 			// Compute mass based on assumed specific power.
-			//Mass=Pout / SpecificPower;
+			Mass=Pout / SpecificPower;
 
 			// get design values 
 			Ndes = Sh_O.Nmech;
@@ -287,7 +290,7 @@ class Motor extends Element {
 
 			// Power to the load (supply - loss)
 			//Pout = Pin - Current**2 * motorResistance;
-			Pout = Pin * Eff;
+			//Pout = Pin * Eff;
 			
 			// Calculate loss
 			Loss_r = 3 * Current**2 * motorResistance;
@@ -299,14 +302,20 @@ class Motor extends Element {
 		// Motor and Propulsor shaft connection
 		trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
 		Sh_O.trq=trq;
+		Pin = Pout / Eff;
+		V = EP_I.V.r;
+		I = Pin / V;
+		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
 
 	} // end calculation section
+	/*
 	void prePass(){
 		
 		EP_I.setIVRMS( 0., 0. , Vreal,  Vimag );
 		EP_I.frequency = frequency;
 		
 	}
+	*/
 	
 	
 } // end the Motor element class
