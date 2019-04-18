@@ -1,0 +1,105 @@
+//-------------------------------------------------------------------------------------------------
+//
+//   File Name:     AC_3phase_example
+//   Date(s):       February 14, 2019
+//   Author:        Tom Lavelle, David Sadey, Jeffrey Csank
+//					NASA Glenn Research Center
+//
+//   Description:   simple example of 3 phase Y circuit from fifth editon of 
+//					Power System Analysis and Design Page 67
+//
+//-------------------------------------------------------------------------------------------------
+// create a power source class 
+setThermoPackage("GasTbl");
+
+class Source extends Element{
+    ElectricOutputPort EP_O;
+
+    //EP_O.setIVRMS(0.,0.,208.,0.);
+    real Vreal;
+    Vreal = 208.;
+    void calculate(){
+		EP_O.setIVRMS(EP_O.I.r, EP_O.I.j, Vreal, EP_O.V.j);        
+    }
+}
+
+class Sink extends Element{
+    ElectricInputPort EP_I;
+
+    //EP_I.setIVRMS(EP_I.I.r, EP_I.I.j, 1., EP_I.V.j);
+    void calculate(){
+        real I;
+        real pwr;
+        pwr = 500.;
+        real V;
+        V = EP_I.V.r;
+        
+        if(V == 0){
+            V = 1.;
+            cout << "\n\n\nI ran!\n\n\n" << endl;
+        }
+        I = pwr / V;
+		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
+    }
+}
+
+Element FlowStart TurbineAtm{
+	Pt=500;
+	Tt=2200;
+	W=500;
+	FAR = .02;
+}
+
+Element Turbine Turb{
+	#include "lptE3.map";	
+	PRbase=2;
+	effDes=0.9;
+
+}
+
+Nozzle Noz{
+  PsExh = 14.;
+}
+
+Element FlowEnd Turbinedump{
+}
+
+Element Shaft Turbine_Shaft {
+	Nmech=4000;   // rpm
+	ShaftInputPort turbinelink;
+    ShaftInputPort genlink;	
+}
+
+Element Generator generator{
+    Vbus_LL = 208.;
+    effDes = .96;
+    SpecificPower = 13.;
+    frequency = 400.;
+    #include <STARCABLmotorGenerator.map>
+}
+
+Element Bus bus1{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+}
+
+Element BasicLoad cable1{
+	R = 0.017449748;    
+}
+
+Element Sink sink{
+}
+
+//--------------------------------------------------------
+// link it up
+//--------------------------------------------------------
+linkPortI( "generator.EP_O", "cable1.EP_I");
+linkPortI("cable1.EP_O", "bus1.EP_I");
+linkPortI("bus1.EP_O", "sink.EP_I");
+
+linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");
+linkPorts("generator.Sh_O", "Turbine_Shaft.genlink", "generatorpwr");
+
+linkPorts("TurbineAtm.Fl_O", "Turb.Fl_I", "stat1");
+linkPorts("Turb.Fl_O", "Noz.Fl_I", "stat2");
+linkPorts("Noz.Fl_O", "Turbinedump.Fl_I", "stat3");
