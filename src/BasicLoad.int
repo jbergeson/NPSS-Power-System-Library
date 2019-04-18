@@ -26,16 +26,18 @@ class BasicLoad extends Element {
 	ComplexNumber dV;
 	ComplexNumber Z;
 	ComplexNumber I;
+	real R;
+	real L;
 
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
 	//------------------------------------------------------------	
-	ElectricOutputPort EP_O {
+	ElectricInputPort EP_I {
 		description = "Electric port";
 	}
 	string EPortRef;
 	
-	ElectricInputPort EP_I {
+	ElectricOutputPort EP_O {
 		description = "Electric Port";
 	}
 	
@@ -50,16 +52,22 @@ class BasicLoad extends Element {
 		//-------------------------------------------------------
 		// calculate current from voltage drop
 		//-------------------------------------------------------
+		Z.setrj( R,  0 );
 		dV.copy( "EP_I.VLN" );
 		dV.minus( "EP_O.VLN" );
 		I.copy( "dV" );
 	    I.div( "Z" );
+
+		EP_I.setIVRMS( I.rRMS, I.jRMS, EP_I.V.rRMS, EP_I.V.jRMS ); 	
+		EP_O.setIVRMS( I.rRMS, I.jRMS, EP_O.V.rRMS, EP_O.V.jRMS ); 			
+		EP_O.frequency=EP_I.frequency;
 		
 		  //----------------------------------------------------------
 	    // set the conditions in the port
 	    //-----------------------------------------------------------
-		EP_O.setIVRMS( I.rRMS, I.jRMS, EP_O.V.rRMS, EP_O.V.jRMS ); 	
-		EP_I.setIVRMS( I.rRMS, I.jRMS, EP_I.V.rRMS, EP_I.V.jRMS ); 			
-		EP_O.frequency=EP_I.frequency;		
+			
+	}
+	void prePass() {
+			
 	}
 }
