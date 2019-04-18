@@ -70,7 +70,7 @@ Element Shaft Turbine_Shaft {
 }
 
 Element Generator generator{
-    Vbus_LL = 208.;
+    Vbus_LL = 1200.;
     effDes = .96;
     SpecificPower = 13.;
     frequency = 400.;

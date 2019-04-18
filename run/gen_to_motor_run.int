@@ -86,7 +86,8 @@ solverSequence.append("bus1");
 
 Independent AtmW{varName = "TurbineAtm.W";}
 solver.addIndependent("AtmW");
-solver.addDependent("motor.match_pwr");
+//solver.addDependent("motor.match_pwr");
+solver.removeIndependent("motorShaft.ind_Nmech");
 
 cout << solver.list("Independent", TRUE) << endl;
 cout << solver.list("Dependent", TRUE) << endl;
