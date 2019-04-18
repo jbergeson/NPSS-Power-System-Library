@@ -58,7 +58,7 @@ GroupBlock Electrical {
 		titleBody = "                          ELECTRICAL POWER SYSTEM"; 
 		compType = "Motor"; 
 		compTypeFormat = "????????"; 
-		compAttr = {"Pin","Pout","Eff","EP_I.V.mag","EP_I.V.phase","EP_I.I.mag","EP_I.I.phase","Mass","Loss_r","Loss_j"};
+		compAttr = {"Pin","Pout","Eff","effDes","effBase","EP_I.V.mag","EP_I.V.phase","EP_I.I.mag","EP_I.I.phase","Mass","Loss_r","Loss_j"};
    }
       
    DColTBlock cable { 
@@ -141,10 +141,10 @@ GroupBlock Electrical {
    }
 
    DColTBlock shafts { 
-         titleBody = "===SHAFTS====   Nmech    trq in    pwr in"; 
+         titleBody = "===SHAFTS====   Nmech    trq in    trq out     pwr in    pwr out          HPX"; 
          compType = "Shaft"; 
          compTypeFormat = "????????????"; 
-         compAttr = { "Nmech:?????.?", "trqIn:??????.?", "pwrIn:??????.?", "HPX:????????.??" } 
+         compAttr = { "Nmech:?????.?", "trqIn:??????.?", "trqOut:???????.?", "pwrIn:??????.?", "pwrOut:????????.?", "HPX:????????.??" } 
          showColHeader = FALSE; 
    } 
       

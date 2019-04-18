@@ -46,13 +46,13 @@ solver.debugLevel = "ITERATION_DETAILS";
 solver.diagnosticFile = "solver.bad";
 solverSequence.remove("bus1");
 //solverSequence.remove("source");
-solverSequence.remove("sink");
+//solverSequence.remove("sink");
 solverSequence.remove("cable1");
 
 
 //solverSequence.append("source");
 solverSequence.append("cable1");
-solverSequence.append("sink");
+//solverSequence.append("sink");
 solverSequence.append("bus1");
 
 
@@ -64,26 +64,29 @@ cout << solver.list("Independent", TRUE) << endl;
 cout << solver.list("Dependent", TRUE) << endl;
  
 run();
+cout << "\nDESIGN ran!\n" << endl;
 
 page.display();  // output data to out file
 
+motorShaft.HPX = 650.;
 setOption("switchDes","OFFDESIGN"); 
 
 autoSolverSetup();
 
 solverSequence.remove("bus1");
 //solverSequence.remove("source");
-solverSequence.remove("sink");
+//solverSequence.remove("sink");
 solverSequence.remove("cable1");
 
 
 //solverSequence.append("source");
 solverSequence.append("cable1");
-solverSequence.append("sink");
+//solverSequence.append("sink");
 solverSequence.append("bus1");
 
 Independent AtmW{varName = "TurbineAtm.W";}
 solver.addIndependent("AtmW");
+solver.addDependent("motor.match_pwr");
 
 cout << solver.list("Independent", TRUE) << endl;
 cout << solver.list("Dependent", TRUE) << endl;

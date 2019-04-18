@@ -141,7 +141,7 @@ class Motor extends Element {
 		allowedValues = { "DESIGN", "OFFDESIGN" } ;
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
-	}\
+	}
 
 	real V;
 	real I;
@@ -192,7 +192,7 @@ class Motor extends Element {
 	//------------------------------------------------------------
 	Independent ind_Vreal { 
 		varName = "Vreal"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "10000";
 		
 		description = "Varies the real component of the motor voltage";
@@ -200,7 +200,7 @@ class Motor extends Element {
 	
 	Independent ind_Vimag { 
 		varName = "Vimag"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "10000";
 		description = "Varies the imaginary component of the motor voltage";
 	}
@@ -213,6 +213,16 @@ class Motor extends Element {
 	Dependent dep_trq_map {
 		eq_lhs = "trqTemp";
 		eq_rhs = "trq";
+	}
+
+	Independent motor_pwr{
+		varName = "Pout";
+		autoSetup = TRUE;
+	}
+
+	Dependent match_pwr{
+		eq_lhs = "Pin";
+		eq_rhs = "Pout / Eff";
 	}
 
 	//------------------------------------------------------------
@@ -271,17 +281,25 @@ class Motor extends Element {
 		
 			// determine resistance 
 			motorResistance =  Loss_r / 3 / Current**2;
+
+
+
+			trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+			trqTemp = trq;
+			Sh_O.trq=trq;
+
+			//set efficiency value
+			if(!S_map.isEmpty()){
+				S_map.execute();
+			}
+			else{
+				effBase = effDes;
+			}
+		
+			Eff = effBase;
+			Pin = Pout / Eff;
+
 		}
-		/*
-		//set efficiency value
-		if(!S_map.isEmpty()){
-			S_map.execute();
-		}
-		else{
-			effBase = effDes;
-		}
-		*/
-		Eff = effDes;
 
 		if ( switchDes == "OFFDESIGN" ){	
 			//*****************************
@@ -295,16 +313,30 @@ class Motor extends Element {
 			// Calculate loss
 			Loss_r = 3 * Current**2 * motorResistance;
 			Loss_j=sqrt((Pin / powerfactor)**2 - Pin**2);
+
+
+
+
+			trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+			trqTemp = trq;
+			Sh_O.trq=trq;
+
+			//set efficiency value
+			if(!S_map.isEmpty()){
+				S_map.execute();
+			}
+			else{
+				effBase = effDes;
+			}
+		
+			Eff = effBase;
 		}
 		
 		CurrentAngle_Demand = EP_I.V.phaseDeg - acos(powerfactor) * 180/PI;
 		
 		// Motor and Propulsor shaft connection
-		trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
-		Sh_O.trq=trq;
-		Pin = Pout / Eff;
 		V = EP_I.V.r;
-		I = Pin / V;
+		I = Pin * 1000. / V;
 		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
 
 	} // end calculation section

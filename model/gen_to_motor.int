@@ -54,7 +54,6 @@ Element Turbine Turb{
 	#include "lptE3.map";	
 	PRbase=2;
 	effDes=0.9;
-
 }
 
 Nozzle Noz{
@@ -100,7 +99,7 @@ Element Motor motor{
 Element Shaft motorShaft{
     Nmech = 4000.;
     ShaftInputPort motorlink;
-    HPX = -670.511;
+    HPX = 670.511;
 }
 //--------------------------------------------------------
 // link it up
@@ -111,7 +110,7 @@ linkPortI("bus1.EP_O", "motor.EP_I");
 
 linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");
 linkPorts("generator.Sh_O", "Turbine_Shaft.genlink", "generatorpwr");
-linkPorts("motor.Sh_O", ")
+linkPorts("motor.Sh_O", "motorShaft.motorlink", "motorpwr");
 
 linkPorts("TurbineAtm.Fl_O", "Turb.Fl_I", "stat1");
 linkPorts("Turb.Fl_O", "Noz.Fl_I", "stat2");
