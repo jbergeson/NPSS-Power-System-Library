@@ -42,7 +42,7 @@ Element Generator generator{
     Vbus_LL = 1200.;
     effDes = .96;
     SpecificPower = 13.;
-    frequency = 400.;
+    //frequency = 400.;
     #include <STARCABLmotorGenerator.map>
 }
 
@@ -129,7 +129,7 @@ Element Shaft motorShaft{
     HPX = 670.511;
 }
 
-setOption("ElectricPowerType","AC3");
+setOption("ElectricPowerType","DC");
 
 
 

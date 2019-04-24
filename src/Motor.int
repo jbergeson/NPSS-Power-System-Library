@@ -189,30 +189,6 @@ class Motor extends Element {
 	//------------------------------------------------------------
 	//  ******  ADD SOLVER INDEPENDENTS & DEPENDENTS  ******
 	//------------------------------------------------------------
-	Independent ind_Vreal { 
-		varName = "Vreal"; 
-		//autoSetup = TRUE;
-		indepRef = "10000";
-		
-		description = "Varies the real component of the motor voltage";
-	}
-	
-	Independent ind_Vimag { 
-		varName = "Vimag"; 
-		//autoSetup = TRUE;
-		indepRef = "10000";
-		description = "Varies the imaginary component of the motor voltage";
-	}
-
-	Independent ind_trqTemp {
-		varName = "trqTemp";
-		description = "Varies temporary torque to match calculated torque for map";
-	}
-
-	Dependent dep_trq_map {
-		eq_lhs = "trqTemp";
-		eq_rhs = "trq";
-	}
 
 	Independent motor_trq{
 		varName = "trq";
