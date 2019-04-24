@@ -125,7 +125,7 @@ class Rectifier extends Element {
 	//------------------------------------------------------------
 	Independent ind_Vreal { 
 		varName = "Vreal"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "1000";
 		
 		description = "Varies the real component of the inverter voltage";
@@ -133,7 +133,7 @@ class Rectifier extends Element {
 	
 	Independent ind_Vimag { 
 		varName = "Vimag"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "1000";
 		description = "Varies the imaginary component of the inverter voltage";
 	}
@@ -141,13 +141,13 @@ class Rectifier extends Element {
 	Dependent dep_Power{
 		eq_rhs="EP_I.S.rRMS * Eff";
 		eq_lhs="EP_O.S.rRMS";
-		autoSetup=TRUE;
+		//autoSetup=TRUE;
 	}
 	
 	Dependent dep_phase{
-		eq_rhs="EP_I.V.phaseDeg";
+		eq_rhs="EP_I.VLN.phaseDeg";
 		eq_lhs="EP_I.I.phaseDeg";
-		autoSetup=TRUE;
+		//autoSetup=TRUE;
 	}
 
 	//------------------------------------------------------------
@@ -166,6 +166,10 @@ class Rectifier extends Element {
 	//   ******* PERFORM ENGINEERING CALCULATIONS *******
 	//------------------------------------------------------------
 
+	real Vin;
+	real pwrIn;
+	real Iin;
+
 	void calculate() {
 		
 		pwrOut = EP_O.S.rRMS;
@@ -183,6 +187,7 @@ class Rectifier extends Element {
 			//*****************************
 		}	
 
+		/*
 		//set efficiency value
 		if(!S_map.isEmpty()){
 			S_map.execute();
@@ -190,15 +195,17 @@ class Rectifier extends Element {
 		else{
 			effBase = effDes;
 		}
-		Eff = effBase;
-	}
-	
-	//------------------------------------------------------------
-	// ******* PREPASS FUNCTION *******
-	//------------------------------------------------------------
-	void prePass() {	
-		EP_I.setIVRMS(0,0,Vreal,Vimag);
-		EP_O.setIVRMS(0,0,EP_I.V.mag * 3 * sqrt(2) / PI, 0);
+		Eff = effBase;*/
+		Eff = effDes;
+		Vin = EP_I.V.r;
+		pwrIn = pwrOut / Eff;
+		Iin = pwrIn / Vin;
+
+		//EP_O.frequency = frequency;
+		EP_O.frequency = EP_I.frequency;
+		EP_O.setIVRMS(EP_O.I.r,EP_O.I.j,EP_O.V.r,EP_O.V.j);
+		EP_I.setIVRMS(Iin,EP_I.I.j,EP_I.V.r,EP_I.V.j);
+		//EP_I.setIVRMS(0,0,EP_O.V.mag * sqrt(2),0);
 	}
 }
 

@@ -84,7 +84,7 @@ class Motor extends Element {
 	}
 
 	real Pout{
-		value = 1.;  IOstatus = "output";  units = "kW";
+		value = 5261.;  IOstatus = "output";  units = "kW";
 		description = "Power out of the motor";
 	}
 
@@ -144,7 +144,6 @@ class Motor extends Element {
 	}
 
 	real V;
-	real I;
 	
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -215,8 +214,8 @@ class Motor extends Element {
 		eq_rhs = "trq";
 	}
 
-	Independent motor_pwr{
-		varName = "Pout";
+	Independent motor_trq{
+		varName = "trq";
 		autoSetup = TRUE;
 	}
 
@@ -231,17 +230,17 @@ class Motor extends Element {
 
 	void variableChanged(string name, any oldVal){
 		if(name == "switchDes"){
-			/*
 			if(switchDes == DESIGN){
-				ind_trqTemp.autoSetup = FALSE;
-				dep_trq_map.autoSetup = FALSE;
+				//ind_trqTemp.autoSetup = FALSE;
+				//dep_trq_map.autoSetup = FALSE;
+				//match_pwr.autoSetup = FALSE;
 			}
 			if(switchDes == OFFDESIGN){
-				effDes.IOstatus = "output";
-				ind_trqTemp.autoSetup = TRUE;
-				dep_trq_map.autoSetup = TRUE;
+				//effDes.IOstatus = "output";
+				//ind_trqTemp.autoSetup = TRUE;
+				//dep_trq_map.autoSetup = TRUE;
+				//match_pwr.autoSetup = TRUE;
 			}
-			*/
 		}
 	} // end variableChanged()
 
@@ -252,9 +251,7 @@ class Motor extends Element {
 	void calculate() {
 		
 		Speed=Sh_O.Nmech;
-		//EP_I.copyport();
-		//Pin = EP_I.S.r;
-		Current = EP_I.I.mag;
+		Current = EP_I.I.r;
 		
 		if ( switchDes == "DESIGN" ){
 			/*****************************
@@ -263,29 +260,17 @@ class Motor extends Element {
 
 			Eff = effDes;
 
-			// compute power to the load
-			//Pout = Pin * Eff;
-
 			// Compute mass based on assumed specific power.
-			Mass=Pout / SpecificPower;
+			Mass= Pout / SpecificPower;
 
 			// get design values 
-			Ndes = Sh_O.Nmech;
-			trqDes = Pout * ( C_HP_PER_RPMtoFT_LBF * (1./ 0.745699872) / Ndes );
-			trqTemp = trqDes;
-			trq = trqDes;
+			Ndes = Speed;
+			trqDes = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );
+			trqTemp = trqDes;	
 
-			// compute losses
-			Loss_r=Pin * (1.0 / Eff - 1.0);
-			Loss_j=sqrt((Pin / powerfactor)**2 - Pin**2);
-		
-			// determine resistance 
-			motorResistance =  Loss_r / 3 / Current**2;
-
-
-
-			trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
-			trqTemp = trq;
+			// set torque
+			//trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+			Pout = (trq / C_HP_PER_RPMtoFT_LBF) * 0.745699872 * Speed;
 			Sh_O.trq=trq;
 
 			//set efficiency value
@@ -298,6 +283,17 @@ class Motor extends Element {
 		
 			Eff = effBase;
 			Pin = Pout / Eff;
+
+			// Calculate Current
+			V = EP_I.V.r;
+			Current = Pin * 1000. / V;
+
+			// Calculate Losses
+			Loss_r=Pin * (1.0 / Eff - 1.0);
+			Loss_j=sqrt((Pin / powerfactor)**2 - Pin**2);
+
+			// determine resistance 
+			motorResistance =  Loss_r / 3 / Current**2;
 
 		}
 
@@ -305,19 +301,9 @@ class Motor extends Element {
 			//*****************************
 			// Off-Design
 			//*****************************
-
-			// Power to the load (supply - loss)
-			//Pout = Pin - Current**2 * motorResistance;
-			//Pout = Pin * Eff;
-			
-			// Calculate loss
-			Loss_r = 3 * Current**2 * motorResistance;
-			Loss_j=sqrt((Pin / powerfactor)**2 - Pin**2);
-
-
-
-
-			trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+	
+			//trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+			Pout = (trq / C_HP_PER_RPMtoFT_LBF) * 0.745699872 * Speed;
 			trqTemp = trq;
 			Sh_O.trq=trq;
 
@@ -331,24 +317,22 @@ class Motor extends Element {
 		
 			Eff = effBase;
 			Pin = Pout / Eff;
+
+			// Calculate Current
+			V = EP_I.V.r;
+			Current = Pin * 1000. / V;
+
+			// Calculate loss
+			Loss_r = 3 * Current**2 * motorResistance;
+			Loss_j=sqrt((Pin / powerfactor)**2 - Pin**2);
 		}
 		
-		CurrentAngle_Demand = EP_I.V.phaseDeg - acos(powerfactor) * 180/PI;
-		
-		// Motor and Propulsor shaft connection
-		V = EP_I.V.r;
-		I = Pin * 1000. / V;
-		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
+		EP_I.setIVRMS(Current, EP_I.I.j, EP_I.V.r, EP_I.V.j);
 
-	} // end calculation section
-	/*
-	void prePass(){
+		CurrentAngle_Demand = EP_I.VLN.phaseDeg - acos(powerfactor) * 180/PI;
+
 		
-		EP_I.setIVRMS( 0., 0. , Vreal,  Vimag );
-		EP_I.frequency = frequency;
-		
-	}
-	*/
-	
+
+	} // end calculation section	
 	
 } // end the Motor element class

@@ -101,7 +101,7 @@ class Bus extends Element{
 	
 	real frequency;
 	real VrealRMS;
-	VrealRMS = 1192.;
+	VrealRMS = 1118.;
 	real VimagRMS;
 	
 	//------------------------------------------------------------

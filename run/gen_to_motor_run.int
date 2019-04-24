@@ -43,25 +43,28 @@ solver.maxJacobians = 1000;
 //setOption( "ElectricPowerType", "AC3" );
 
 solver.debugLevel = "ITERATION_DETAILS";
-solver.diagnosticFile = "solver.bad";
-solverSequence.remove("bus1");
-//solverSequence.remove("source");
-//solverSequence.remove("sink");
+solver.diagnosticFile = "solver.int";
+
 solverSequence.remove("cable1");
+//solverSequence.remove("cable2");
+//solverSequence.remove("cable3");
+solverSequence.remove("bus1");
+//solverSequence.remove("bus2");
+//solverSequence.remove("bus3");
+//solverSequence.remove("bus4");
+//solverSequence.remove("bus5");
 
-
-//solverSequence.append("source");
 solverSequence.append("cable1");
-//solverSequence.append("sink");
+//solverSequence.append("cable2");
+//solverSequence.append("cable3");
 solverSequence.append("bus1");
-
-
 //solverSequence.append("bus2");
+//solverSequence.append("bus3");
+//solverSequence.append("bus4");
+//solverSequence.append("bus5");
+
+
 Independent turbine_power{varName = "Turb.PRbase";}
-//solver.addIndependent("turbine_power");
-cout << solverSequence << endl;
-cout << solver.list("Independent", TRUE) << endl;
-cout << solver.list("Dependent", TRUE) << endl;
  
 run();
 cout << "\nDESIGN ran!\n" << endl;
@@ -73,25 +76,29 @@ setOption("switchDes","OFFDESIGN");
 
 autoSolverSetup();
 
-solverSequence.remove("bus1");
-//solverSequence.remove("source");
-//solverSequence.remove("sink");
 solverSequence.remove("cable1");
+//solverSequence.remove("cable2");
+//solverSequence.remove("cable3");
+solverSequence.remove("bus1");
+//solverSequence.remove("bus2");
+//solverSequence.remove("bus3");
+//solverSequence.remove("bus4");
+//solverSequence.remove("bus5");
 
-
-//solverSequence.append("source");
 solverSequence.append("cable1");
-//solverSequence.append("sink");
+//solverSequence.append("cable2");
+//solverSequence.append("cable3");
 solverSequence.append("bus1");
+//solverSequence.append("bus2");
+//solverSequence.append("bus3");
+//solverSequence.append("bus4");
+//solverSequence.append("bus5");
 
 Independent AtmW{varName = "TurbineAtm.W";}
 solver.addIndependent("AtmW");
-//solver.addDependent("motor.match_pwr");
 solver.removeIndependent("motorShaft.ind_Nmech");
 
-cout << solver.list("Independent", TRUE) << endl;
-cout << solver.list("Dependent", TRUE) << endl;
-
 run();
+cout << "\nOFFDESIGN ran!\n" << endl;
 
 page.display();

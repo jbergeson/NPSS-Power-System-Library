@@ -28,6 +28,7 @@ class BasicLoad extends Element {
 	ComplexNumber I;
 	real R;
 	real L;
+	real length;
 
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -48,26 +49,23 @@ class BasicLoad extends Element {
 		trigger=FALSE;
 	}
 	
+	
 	void calculate() {		
 		//-------------------------------------------------------
 		// calculate current from voltage drop
 		//-------------------------------------------------------
-		Z.setrj( R,  0 );
+		Z.setrj( R,  L*(2*PI*EP_I.frequency) );
 		dV.copy( "EP_I.VLN" );
 		dV.minus( "EP_O.VLN" );
 		I.copy( "dV" );
 	    I.div( "Z" );
-
+		EP_O.frequency=EP_I.frequency;
 		EP_I.setIVRMS( I.rRMS, I.jRMS, EP_I.V.rRMS, EP_I.V.jRMS ); 	
 		EP_O.setIVRMS( I.rRMS, I.jRMS, EP_O.V.rRMS, EP_O.V.jRMS ); 			
-		EP_O.frequency=EP_I.frequency;
 		
 		  //----------------------------------------------------------
 	    // set the conditions in the port
 	    //-----------------------------------------------------------
-			
-	}
-	void prePass() {
 			
 	}
 }

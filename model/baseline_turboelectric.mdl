@@ -200,6 +200,11 @@ Element Shaft Turbine_Shaft {
 Independent turbine_pwr{varName = "Turbine_Shaft.HPX";}
 
 setOption("ElectricPowerType","AC3");
+Rect1.EP_O.setOption("ElectricPowerType", "DC");
+Inv1.EP_I.setOption("ElectricPowerType", "DC");
+Cable1.EP_O.setOption("ElectricPowerType", "DC");
+Cable1.EP_I.setOption("ElectricPowerType", "DC");
+
 
 
 //-------------------------------------------------------------------------------------------------

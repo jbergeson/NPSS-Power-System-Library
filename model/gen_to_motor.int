@@ -12,37 +12,6 @@
 // create a power source class 
 setThermoPackage("GasTbl");
 
-class Source extends Element{
-    ElectricOutputPort EP_O;
-
-    //EP_O.setIVRMS(0.,0.,208.,0.);
-    real Vreal;
-    Vreal = 208.;
-    void calculate(){
-		EP_O.setIVRMS(EP_O.I.r, EP_O.I.j, Vreal, EP_O.V.j);        
-    }
-}
-
-class Sink extends Element{
-    ElectricInputPort EP_I;
-    real pwr;
-    real I;
-    real V;
-    //EP_I.setIVRMS(EP_I.I.r, EP_I.I.j, 1., EP_I.V.j);
-    void calculate(){        
-        pwr = 500.;
-        
-        V = EP_I.V.r;
-        
-        if(V == 0){
-            V = 1.;
-            cout << "\n\n\nI ran!\n\n\n" << endl;
-        }
-        I = pwr / V;
-		EP_I.setIVRMS(I, EP_I.I.j, EP_I.V.r, EP_I.V.j);
-    }
-}
-
 Element FlowStart TurbineAtm{
 	Pt=500;
 	Tt=2200;
@@ -77,15 +46,73 @@ Element Generator generator{
     #include <STARCABLmotorGenerator.map>
 }
 
+Element BasicLoad cable1{
+	R = 0.017449748; 
+    length = 28.3464;
+	L = .0000796 * length * 3.28 / (60. * 2. * PI * 1000.);
+    void postexecute() {
+       //cout << "cable1 in: " << EP_I.I.r << " cable1 out: " << EP_O.I.r << endl;
+    }   
+}
+
 Element Bus bus1{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
+    //VrealRMS = 1175.;
+}
+/*
+Element Rectifier rectifier{
+    effDes = .95;
+    pwrDes = 550.;
+    frequency = 400.;
+    #include <modelInverterRectifier.map>
 }
 
-Element BasicLoad cable1{
+Element Bus bus2{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+    //VrealRMS = 1150.;
+}
+
+Element BasicLoad cable2{
 	R = 0.017449748;    
+    void postexecute() {
+       cout << "cable2 in: " << EP_I.I.r << " cable2 out: " << EP_O.I.r << endl;
+    }
 }
 
+Element Bus bus3{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+    //VrealRMS = 1100.;
+}
+
+Element Inverter inverter{
+    effDes = .96;
+    pwrDes = 550.;
+    frequency = 400.;
+    #include <modelInverterRectifier.map>
+}
+
+Element Bus bus4{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+    //VrealRMS = 1050.;
+}
+
+Element BasicLoad cable3{
+	R = 0.017449748;    
+    void postexecute() {
+       cout << "cable3 in: " << EP_I.I.r << " cable3 out: " << EP_O.I.r << endl;
+    }
+}
+
+Element Bus bus5{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+    //VrealRMS = 1000.;
+}
+*/
 Element Motor motor{
    effDes = .96;
    powerfactor = .9;
@@ -101,11 +128,22 @@ Element Shaft motorShaft{
     ShaftInputPort motorlink;
     HPX = 670.511;
 }
+
+setOption("ElectricPowerType","AC3");
+
+
+
 //--------------------------------------------------------
 // link it up
 //--------------------------------------------------------
 linkPortI( "generator.EP_O", "cable1.EP_I");
 linkPortI("cable1.EP_O", "bus1.EP_I");
+/*linkPortI("bus1.EP_O", "rectifier.EP_I");
+linkPortI("rectifier.EP_O", "cable2.EP_I");
+linkPortI("cable2.EP_O", "bus3.EP_I");
+linkPortI("bus3.EP_O", "inverter.EP_I");
+linkPortI("inverter.EP_O", "cable3.EP_I");
+linkPortI("cable3.EP_O", "bus5.EP_I");*/
 linkPortI("bus1.EP_O", "motor.EP_I");
 
 linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");

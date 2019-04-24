@@ -127,7 +127,7 @@ class Inverter extends Element {
 	//------------------------------------------------------------
 	Independent ind_Vreal { 
 		varName = "Vreal"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "10000";
 		
 		description = "Varies the real component of the inverter voltage";
@@ -136,7 +136,7 @@ class Inverter extends Element {
 	
 	Independent ind_Vimag { 
 		varName = "Vimag"; 
-		autoSetup = TRUE;
+		//autoSetup = TRUE;
 		indepRef = "10000";
 		description = "Varies the imaginary component of the inverter voltage";
 	}
@@ -144,14 +144,14 @@ class Inverter extends Element {
 	Dependent dep_Power{
 		eq_rhs="EP_I.S.rRMS * Eff";
 		eq_lhs="EP_O.S.rRMS";
-		autoSetup=TRUE;
+		//autoSetup=TRUE;
 	}
 	
 	
 	Dependent dep_phase{
 		eq_rhs="0";
 		eq_lhs="EP_O.V.phaseDeg";
-		autoSetup=TRUE;
+		//autoSetup=TRUE;
 	}
 
 	//------------------------------------------------------------
@@ -169,10 +169,12 @@ class Inverter extends Element {
 	//------------------------------------------------------------
 	//   ******* PERFORM ENGINEERING CALCULATIONS *******
 	//------------------------------------------------------------
+	real Vin;
+	real pwrIn;
+	real Iin;
 	
 	void calculate() {
-
-		//pwrOut = EP_O.S.rRMS;
+		pwrOut = EP_O.S.rRMS;
 		
 		if (switchDes == "DESIGN" ){
 			/****************************
@@ -195,19 +197,17 @@ class Inverter extends Element {
 		}
 		Eff = effBase;*/
 		Eff = effDes;
-	}
-	
-	
-	
-	//------------------------------------------------------------
-	// ******* PREPASS FUNCTION *******
-	//------------------------------------------------------------
-	void prePass() {
-		EP_O.frequency = frequency;
-		EP_O.setIVRMS(0,0,Vreal,Vimag);
-		EP_I.setIVRMS(0,0,EP_O.V.mag * sqrt(2),0);
-		
-		
+		Vin = EP_I.V.r;
+		pwrIn = pwrOut / Eff;
+		Iin = pwrIn / Vin;
+
+		//EP_O.frequency = frequency;
+		EP_O.frequency = EP_I.frequency;
+		EP_O.setIVRMS(EP_O.I.r,EP_O.I.j,EP_O.V.r,EP_O.V.j);
+		EP_I.setIVRMS(Iin,EP_I.I.j,EP_I.V.r,EP_I.V.j);
+		//EP_I.setIVRMS(0,0,EP_O.V.mag * sqrt(2),0);
+
+
 	}
 }
 

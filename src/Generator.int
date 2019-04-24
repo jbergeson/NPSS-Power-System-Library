@@ -208,14 +208,14 @@ class Generator extends Element {
 	//------------------------------------------------------------
 
 	void calculate() {
+		EP_O.frequency = frequency;
 		EP_O.setIVRMS( EP_O.I.r, EP_O.I.j , Vbus_LL,  EP_O.V.j );
 		real powerfactor=1.0;
-		real Vbus=0;
 		
 		Speed = Sh_O.Nmech;
 		Pout = EP_O.S.r;
 		Current = EP_O.I.mag;
-
+	
 		if (switchDes == "DESIGN" ){
 			/****************************
 			On-design
@@ -270,13 +270,6 @@ class Generator extends Element {
 		trq =  C_HP_PER_RPMtoFT_LBF * (Pin / 0.745699872) / Speed;
 		Sh_O.trq = -trq;	
 	}
-	/*void prePass(){
-		
-		//real Vbus = Vbus_LL / sqrt(3.);
-		EP_O.frequency = frequency;
-		
-	}
-	*/
 }
 
 
