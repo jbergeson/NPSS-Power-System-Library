@@ -102,7 +102,7 @@ class MotorGeneratorMap extends Subelement{
     // FLOW STATIONS
 
     // SOCKETS
-    // addInterface("MOTOR_GENERATOR_MAP"); // compatible with the Motor and Generator elements' S_map socketType
+    // addInterface("MOTOR_GENERATOR_MAP"); // compatible with the Motor and Generator elements' S_map socketType (MOTOR_GENERATOR_MAP currently does not exist as a socketType)
     addInterface("TURBINE_EFFICIENCY_MAP"); // compatible with the Motor and Generator elements' S_map socketType
 
     Socket TB_eff{
@@ -156,7 +156,7 @@ class MotorGeneratorMap extends Subelement{
     void calculate(){
 
         if(switchDes == DESIGN){
-            //cout << "top " << effMapDes << endl;
+
             // set map values at design point
             Nmap = NmapDes;
             trqMap = trqMapDes;
@@ -178,7 +178,6 @@ class MotorGeneratorMap extends Subelement{
         
         //set efficiency to send to parent element
         effBase = effMap * s_effDes;
-        //cout << "bottom " << effDes << endl;
 
     } // end of calculations
 } // end of MotorGeneratorMap subelement class

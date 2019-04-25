@@ -1,4 +1,4 @@
-        // ****************************************************************************
+// ****************************************************************************
 // * NASA Glenn Research Center
 // * 21000 Brookpark Rd
 // * Cleveland, OH 44135
@@ -89,7 +89,7 @@ class Motor extends Element {
 	}
 
 	real powerfactor {
-		value = 1; //IOstatus=OUTPUT; units="kW";
+		value = 1; IOstatus="output"; units="kW";
 		description = "Motor Loss";
 	}
 	
@@ -115,17 +115,12 @@ class Motor extends Element {
 
 	real trqTemp{
 		value = 1.;  IOstatus = "output";  units = FT_LBF;
-		description = "Temporary torque which the solver drives to match actual torque";
+		description = "This is the same as trq. The map requires a variable named 'trqTemp' because generator uses a solver to drive the trq = trqTemp";
 	}
 
-	real Vreal{
-		value = 1000.;  IOstatus = "output";  //units = "";
-		description = "Real portion of voltage";
-	}
-
-	real Vimag{
-		value = -1.;  IOstatus = "output";  //units = "";
-		description = "Imaginary portion of voltage";
+	real Vin{
+		value = 1.;  IOstatus = "output";  units = "V";
+		description = "Voltage into the motor";
 	}
 	
 	//------------------------------------------------------------
@@ -137,8 +132,6 @@ class Motor extends Element {
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
 	}
-
-	real V;
 	
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -171,7 +164,7 @@ class Motor extends Element {
 	Socket S_map{
 		allowedValues = {"effBase"}
 		description = "Socket to calculate motor map performance";
-		//socketType = "MOTOR_GENERATOR_MAP";
+		//socketType = "MOTOR_GENERATOR_MAP";  // A MOTOR_GENERATOR_MAP socket type currently doesn't exist, but that is what this should eventually be
 		socketType = "TURBINE_EFFICIENCY_MAP";
 	}
 
@@ -202,15 +195,10 @@ class Motor extends Element {
 	void variableChanged(string name, any oldVal){
 		if(name == "switchDes"){
 			if(switchDes == DESIGN){
-				//ind_trqTemp.autoSetup = FALSE;
-				//dep_trq_map.autoSetup = FALSE;
-				//match_pwr.autoSetup = FALSE;
+
 			}
 			if(switchDes == OFFDESIGN){
-				//effDes.IOstatus = "output";
-				//ind_trqTemp.autoSetup = TRUE;
-				//dep_trq_map.autoSetup = TRUE;
-				//match_pwr.autoSetup = TRUE;
+
 			}
 		}
 	} // end variableChanged()
@@ -239,8 +227,7 @@ class Motor extends Element {
 			trqDes = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );
 			trqTemp = trqDes;	
 
-			// set torque
-			//trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
+			// set Pout
 			Pout = (trq / C_HP_PER_RPMtoFT_LBF) * 0.745699872 * Speed;
 			Sh_O.trq=trq;
 
@@ -256,8 +243,8 @@ class Motor extends Element {
 			Pin = Pout / Eff;
 
 			// Calculate Current
-			V = EP_I.V.r;
-			Current = Pin * 1000. / V;
+			Vin = EP_I.V.r;
+			Current = Pin * 1000. / Vin;
 
 			// Calculate Losses
 			Loss_r=Pin * (1.0 / Eff - 1.0);
@@ -273,7 +260,6 @@ class Motor extends Element {
 			// Off-Design
 			//*****************************
 	
-			//trq = ( C_HP_PER_RPMtoFT_LBF * (Pout/ 0.745699872) / Speed );	
 			Pout = (trq / C_HP_PER_RPMtoFT_LBF) * 0.745699872 * Speed;
 			trqTemp = trq;
 			Sh_O.trq=trq;
@@ -290,8 +276,8 @@ class Motor extends Element {
 			Pin = Pout / Eff;
 
 			// Calculate Current
-			V = EP_I.V.r;
-			Current = Pin * 1000. / V;
+			Vin = EP_I.V.r;
+			Current = Pin * 1000. / Vin;
 
 			// Calculate loss
 			Loss_r = 3 * Current**2 * motorResistance;

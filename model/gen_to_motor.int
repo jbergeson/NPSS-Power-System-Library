@@ -126,7 +126,7 @@ Element Motor motor{
    SpecificPower = 13.;
    trq = 55144.;
    //frequency = 400.;
-   Vreal = 1000.; 
+   //Vreal = 1000.; 
    #include <STARCABLmotorGenerator.map>
 }
 

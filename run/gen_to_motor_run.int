@@ -23,7 +23,6 @@ fine, imprisonment, or both.
 
 //include viewers
 #include "npssel.view"
-//#include "npssel_runtime.view"
 
 // select model
 #include "gen_to_motor.int"
@@ -31,32 +30,24 @@ fine, imprisonment, or both.
 setOption("switchDes","DESIGN"); 
 autoSolverSetup();
 
-//---------------------------------------------------------
-// just like a rocket engine, volumes last
-//---------------------------------------------------------
-solver.debugLevel = "ITERATION_DETAILS";
-solver.diagnosticFile = "Solver.bad";
-
 solver.maxIterations = 5000;
 solver.maxJacobians = 1000;
-
-//setOption( "ElectricPowerType", "AC3" );
 
 solver.debugLevel = "ITERATION_DETAILS";
 solver.diagnosticFile = "solver.int";
 
-solverSequence.remove("cable1");
-solverSequence.remove("cable2");
-solverSequence.remove("cable3");
+//solverSequence.remove("cable1");
+//solverSequence.remove("cable2");
+//solverSequence.remove("cable3");
 solverSequence.remove("bus1");
 solverSequence.remove("bus2");
 solverSequence.remove("bus3");
 solverSequence.remove("bus4");
 solverSequence.remove("bus5");
 
-solverSequence.append("cable1");
-solverSequence.append("cable2");
-solverSequence.append("cable3");
+//solverSequence.append("cable1");
+//solverSequence.append("cable2");
+//solverSequence.append("cable3");
 solverSequence.append("bus1");
 solverSequence.append("bus2");
 solverSequence.append("bus3");
@@ -65,8 +56,6 @@ solverSequence.append("bus5");
 
 
 Independent turbine_power{varName = "Turb.PRbase";}
-
-cout << solverSequence << endl;
  
 run();
 cout << "\nDESIGN ran!\n" << endl;

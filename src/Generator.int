@@ -29,11 +29,6 @@ class Generator extends Element {
 		value = 1.; IOstatus="input"; units="A";
 		description = "Current";
 	} 
-	
-	real CurrentAngle {
-		value = 0; IOstatus="input"; units="deg";
-		description = "Current Angle";
-	}
 
 	real Eff{
 		value=1.; IOstatus="input"; units = "none";
@@ -85,14 +80,19 @@ class Generator extends Element {
 		description = "rotational speed at design";
 	}
 	
+	real Pin {
+		value = 1.;  IOstatus = "input";  units = "kW";
+		description = "Power in to the generator";
+	}
+	
 	real Pout {
 		value = 1.;  IOstatus = "output";  units = "kW";
 		description = "Power out of the generator";
 	}
 
-	real Pin {
-		value = 1.;  IOstatus = "input";  units = "kW";
-		description = "Power in to the generator";
+	real powerfactor {
+		value = 1.;  IOstatus = "input";  units = "none";
+		description = "Power factor for element";
 	}
 
 	real SpecificPower {
@@ -226,10 +226,12 @@ class Generator extends Element {
 	//------------------------------------------------------------
 
 	void calculate() {
+
+		//set values in the port
 		EP_O.frequency = frequency;
 		EP_O.setIVRMS( EP_O.I.r, EP_O.I.j , Vbus_LL,  EP_O.V.j );
-		real powerfactor=1.0;
 		
+		//get necessary values
 		Speed = Sh_O.Nmech;
 		Pout = EP_O.S.r;
 		Current = EP_O.I.mag;
@@ -258,7 +260,7 @@ class Generator extends Element {
 			genResistance =  Loss_r / 3 / Current**2;
 		
 			// Compute mass based on assumed specific power.  Both Mass
-			// and loses are based on output power (Power Sent)
+			// and loses are based on output power 
 			Mass = Pout / SpecificPower;
 		}
 
@@ -276,7 +278,7 @@ class Generator extends Element {
 			Off-design
 			****************************/
 			
-			// Supply power is load power + losses
+			// Compute power to generator
 			Pin = Pout / Eff;
 			
 			// determine loss in the generator
