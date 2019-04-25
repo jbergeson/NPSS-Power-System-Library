@@ -50,6 +50,11 @@ class Rectifier extends Element {
 		description = "Frequency of AC output power";
 	}
 
+	real Iimag {
+		value = 1.;  IOstatus = "output";  units = "none";
+		description = "Solver independent to vary imaginary portion of input current";
+	}
+
 	real pwrDes {
 		value = 1.;  IOstatus = "input";  units = "kW";
 		description = "Output power at design";
@@ -123,31 +128,17 @@ class Rectifier extends Element {
 	//------------------------------------------------------------
 	//  ******  ADD SOLVER INDEPENDENTS & DEPENDENTS  ******
 	//------------------------------------------------------------
-	Independent ind_Vreal { 
-		varName = "Vreal"; 
-		//autoSetup = TRUE;
-		indepRef = "1000";
-		
-		description = "Varies the real component of the inverter voltage";
-	}
-	
-	Independent ind_Vimag { 
-		varName = "Vimag"; 
-		//autoSetup = TRUE;
-		indepRef = "1000";
-		description = "Varies the imaginary component of the inverter voltage";
-	}
-	
-	Dependent dep_Power{
-		eq_rhs="EP_I.S.rRMS * Eff";
-		eq_lhs="EP_O.S.rRMS";
-		//autoSetup=TRUE;
-	}
 	
 	Dependent dep_phase{
 		eq_rhs="EP_I.VLN.phaseDeg";
 		eq_lhs="EP_I.I.phaseDeg";
 		//autoSetup=TRUE;
+	}
+
+	Independent imag_current{
+		varName = "Iimag";
+		description = "Varies imaginary current to match phase angle";
+		//autoSetup = TRUE;
 	}
 
 	Independent dc_current{
@@ -170,7 +161,7 @@ class Rectifier extends Element {
 	}
 
 	Dependent bus_voltage{
-		eq_lhs = "EP_I.V.r * m";
+		eq_lhs = "EP_I.V.mag * m";
 		eq_rhs = "EP_O.V.r";
 		autoSetup = TRUE;
 	}
@@ -199,8 +190,12 @@ class Rectifier extends Element {
 	m = 1;
 
 	void calculate() {
+
+		EP_O.frequency = 0.;
+		EP_O.setIVRMS(Idc,EP_O.I.j,EP_O.V.r,EP_O.V.j);
+		EP_I.setIVRMS(Iac,EP_I.I.j,EP_I.V.r,EP_I.V.j);
 		
-		pwrOut = EP_O.S.rRMS;
+		pwrOut = EP_O.S.r;
 		
 		if (switchDes == "DESIGN" ){
 			/****************************
@@ -215,7 +210,6 @@ class Rectifier extends Element {
 			//*****************************
 		}	
 
-		/*
 		//set efficiency value
 		if(!S_map.isEmpty()){
 			S_map.execute();
@@ -223,14 +217,9 @@ class Rectifier extends Element {
 		else{
 			effBase = effDes;
 		}
-		Eff = effBase;*/
-		Eff = effDes;
+		Eff = effBase;
+		//Eff = effDes;
 
-		//EP_O.frequency = frequency;
-		EP_O.frequency = EP_I.frequency;
-		EP_O.setIVRMS(Idc,EP_O.I.j,EP_O.V.r,EP_O.V.j);
-		EP_I.setIVRMS(Iac,EP_I.I.j,EP_I.V.r,EP_I.V.j);
-		//EP_I.setIVRMS(0,0,EP_O.V.mag * sqrt(2),0);
 	}
 }
 

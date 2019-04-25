@@ -58,14 +58,14 @@ GroupBlock Electrical {
 		titleBody = "                          ELECTRICAL POWER SYSTEM"; 
 		compType = "Motor"; 
 		compTypeFormat = "????????"; 
-		compAttr = {"Pin","Pout","Eff","effDes","effBase","EP_I.V.mag","EP_I.V.phase","EP_I.I.mag","EP_I.I.phase","Mass","Loss_r","Loss_j"};
+		compAttr = {"Pin","Pout","Eff","effDes","effBase","EP_I.V.mag","EP_I.V.phase","EP_I.I.mag","EP_I.I.phase","Mass","Loss_r","Loss_j", "EP_I.frequency"};
    }
       
    DColTBlock cable { 
 		titleBody = "\n"; 
 		compType = "Cable"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"EP_I.S.r","EP_O.S.r","EP_I.V.mag","EP_O.V.mag","EP_O.V.phase","EP_O.I.mag","EP_O.I.phase","Mass","Loss_r","Loss_j"}; 
+		compAttr = {"EP_I.S.r","EP_O.S.r","EP_I.V.mag","EP_O.V.mag","EP_O.V.phase","EP_O.I.mag","EP_O.I.phase","Mass","Loss_r","Loss_j", "EP_I.frequency", "EP_O.frequency"}; 
    } 
     
 	DColTBlock threephasecable { 
@@ -80,7 +80,7 @@ GroupBlock Electrical {
 		titleBody = "\n Generators"; 
 		compType = "Generator"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"Pin","Pout","Eff","effDes","effBase","EP_O.V.mag","EP_O.V.phase","EP_O.I.mag","EP_O.I.phase","Mass","Loss_r","Loss_j"}; 
+		compAttr = {"Pin","Pout","Eff","effDes","effBase","EP_O.V.mag","EP_O.V.phase","EP_O.I.mag","EP_O.I.phase","Mass","Loss_r","Loss_j", "EP_O.frequency"}; 
 		//showColHeader=FALSE; 	
    }
    
@@ -96,7 +96,7 @@ GroupBlock Electrical {
 		titleBody = "\n Inverters"; 
 		compType = "Inverter"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"pwrOut", "EP_I.S.r","EP_I.V.mag", "EP_O.V.mag","Eff","effBase","effDes"}; 
+		compAttr = {"EP_O.S.r", "EP_I.S.r","EP_I.V.mag", "EP_O.V.mag","Eff","effBase","effDes", "EP_I.frequency", "EP_O.frequency"}; 
 		//showColHeader=FALSE; 	
    }
 
@@ -104,7 +104,7 @@ GroupBlock Electrical {
 		titleBody = "\n Rectifiers"; 
 		compType = "Rectifier"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"pwrOut", "EP_I.S.r","EP_I.V.mag", "EP_O.V.mag","Eff","effBase","effDes"}; 
+		compAttr = {"EP_O.S.r", "EP_I.S.r","EP_I.V.mag", "EP_O.V.mag","Eff","effBase","effDes", "EP_I.frequency", "EP_O.frequency"}; 
 		//showColHeader=FALSE; 	
    }
 
@@ -125,10 +125,10 @@ GroupBlock Electrical {
    }
 
    DColTBlock bus { 
-		titleBody = "\n Buses"; 
+		titleBody = "\n Busses"; 
 		compType = "Bus"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"EP_I.S.r","EP_O.S.r", "EP_I.V.r", "EP_O.V.r","EP_I.I.r", "EP_O.I.r"}; 
+		compAttr = {"EP_I.S.r","EP_O.S.r", "EP_I.V.r", "EP_O.V.r","EP_I.I.r", "EP_O.I.r", "EP_I.frequency", "EP_O.frequency"}; 
 		//showColHeader=FALSE; 	
    }
 
@@ -136,7 +136,7 @@ GroupBlock Electrical {
 		titleBody = "\n Loads"; 
 		compType = "BasicLoad"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"EP_I.S.r","EP_O.S.r", "EP_I.V.r", "EP_O.V.r","EP_I.I.r", "EP_O.I.r"}; 
+		compAttr = {"EP_I.S.r","EP_O.S.r","EP_I.V.mag","EP_O.V.mag","EP_O.V.phase","EP_O.I.mag","EP_O.I.phase","EP_I.frequency", "EP_O.frequency"}; 
 		//showColHeader=FALSE; 	
    }
 
@@ -150,8 +150,8 @@ GroupBlock Electrical {
       
    anchor = "motor"; 
    motor.bottom = "cable"; 
-   cable.bottom =  "threephasecable";
-   threephasecable.bottom =  "generator";
+   cable.bottom =  "generator";
+   //threephasecable.bottom =  "generator";
    generator.bottom = "threephaseyload";
    threephaseyload.bottom = "rectifier";
    rectifier.bottom = "inverter";

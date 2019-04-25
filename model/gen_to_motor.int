@@ -42,9 +42,16 @@ Element Generator generator{
     Vbus_LL = 1200.;
     effDes = .96;
     SpecificPower = 13.;
-    //frequency = 400.;
+    frequency = 400.;
     #include <STARCABLmotorGenerator.map>
 }
+/*
+Element Bus bus0{
+    ElectricInputPort EP_I;
+    ElectricOutputPort EP_O;
+    //VrealRMS = 1175.;
+}
+*/
 
 Element BasicLoad cable1{
 	R = 0.017449748; 
@@ -63,7 +70,7 @@ Element Bus bus1{
 
 Element Rectifier rectifier{
     effDes = .95;
-    pwrDes = 550.;
+    pwrDes = 800.;
     frequency = 400.;
     #include <modelInverterRectifier.map>
 }
@@ -89,7 +96,7 @@ Element Bus bus3{
 
 Element Inverter inverter{
     effDes = .96;
-    pwrDes = 550.;
+    pwrDes = 850.;
     frequency = 400.;
     #include <modelInverterRectifier.map>
 }
@@ -118,7 +125,7 @@ Element Motor motor{
    powerfactor = .9;
    SpecificPower = 13.;
    trq = 55144.;
-   frequency = 400.;
+   //frequency = 400.;
    Vreal = 1000.; 
    #include <STARCABLmotorGenerator.map>
 }
@@ -129,7 +136,7 @@ Element Shaft motorShaft{
     HPX = 670.511;
 }
 
-setOption("ElectricPowerType","DC");
+setOption("ElectricPowerType","AC3");
 
 
 

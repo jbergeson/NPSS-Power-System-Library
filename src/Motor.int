@@ -52,11 +52,6 @@ class Motor extends Element {
 		value = 1.;  IOstatus = "input";  units = "none";
 		description = "Adiabatic efficiency at design point.";
 	} 
-
-	real frequency {
-		value = 0; IOstatus="input"; units=DEG;
-		description = "Generator Frequency";
-	}
 	
 	real Loss_j {
 		value = 0; //IOstatus=OUTPUT; units="kW";
