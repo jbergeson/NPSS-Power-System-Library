@@ -60,7 +60,7 @@ Element Bus bus1{
     ElectricOutputPort EP_O;
     //VrealRMS = 1175.;
 }
-/*
+
 Element Rectifier rectifier{
     effDes = .95;
     pwrDes = 550.;
@@ -77,7 +77,7 @@ Element Bus bus2{
 Element BasicLoad cable2{
 	R = 0.017449748;    
     void postexecute() {
-       cout << "cable2 in: " << EP_I.I.r << " cable2 out: " << EP_O.I.r << endl;
+       //cout << "cable2 in: " << EP_I.I.r << " cable2 out: " << EP_O.I.r << endl;
     }
 }
 
@@ -103,7 +103,7 @@ Element Bus bus4{
 Element BasicLoad cable3{
 	R = 0.017449748;    
     void postexecute() {
-       cout << "cable3 in: " << EP_I.I.r << " cable3 out: " << EP_O.I.r << endl;
+       //cout << "cable3 in: " << EP_I.I.r << " cable3 out: " << EP_O.I.r << endl;
     }
 }
 
@@ -112,7 +112,7 @@ Element Bus bus5{
     ElectricOutputPort EP_O;
     //VrealRMS = 1000.;
 }
-*/
+
 Element Motor motor{
    effDes = .96;
    powerfactor = .9;
@@ -138,13 +138,15 @@ setOption("ElectricPowerType","DC");
 //--------------------------------------------------------
 linkPortI( "generator.EP_O", "cable1.EP_I");
 linkPortI("cable1.EP_O", "bus1.EP_I");
-/*linkPortI("bus1.EP_O", "rectifier.EP_I");
-linkPortI("rectifier.EP_O", "cable2.EP_I");
+linkPortI("bus1.EP_O", "rectifier.EP_I");
+linkPortI("rectifier.EP_O", "bus2.EP_I");
+linkPortI("bus2.EP_O", "cable2.EP_I");
 linkPortI("cable2.EP_O", "bus3.EP_I");
 linkPortI("bus3.EP_O", "inverter.EP_I");
-linkPortI("inverter.EP_O", "cable3.EP_I");
-linkPortI("cable3.EP_O", "bus5.EP_I");*/
-linkPortI("bus1.EP_O", "motor.EP_I");
+linkPortI("inverter.EP_O", "bus4.EP_I");
+linkPortI("bus4.EP_O", "cable3.EP_I");
+linkPortI("cable3.EP_O", "bus5.EP_I");
+linkPortI("bus5.EP_O", "motor.EP_I");
 
 linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");
 linkPorts("generator.Sh_O", "Turbine_Shaft.genlink", "generatorpwr");

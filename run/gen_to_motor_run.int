@@ -46,25 +46,27 @@ solver.debugLevel = "ITERATION_DETAILS";
 solver.diagnosticFile = "solver.int";
 
 solverSequence.remove("cable1");
-//solverSequence.remove("cable2");
-//solverSequence.remove("cable3");
+solverSequence.remove("cable2");
+solverSequence.remove("cable3");
 solverSequence.remove("bus1");
-//solverSequence.remove("bus2");
-//solverSequence.remove("bus3");
-//solverSequence.remove("bus4");
-//solverSequence.remove("bus5");
+solverSequence.remove("bus2");
+solverSequence.remove("bus3");
+solverSequence.remove("bus4");
+solverSequence.remove("bus5");
 
 solverSequence.append("cable1");
-//solverSequence.append("cable2");
-//solverSequence.append("cable3");
+solverSequence.append("cable2");
+solverSequence.append("cable3");
 solverSequence.append("bus1");
-//solverSequence.append("bus2");
-//solverSequence.append("bus3");
-//solverSequence.append("bus4");
-//solverSequence.append("bus5");
+solverSequence.append("bus2");
+solverSequence.append("bus3");
+solverSequence.append("bus4");
+solverSequence.append("bus5");
 
 
 Independent turbine_power{varName = "Turb.PRbase";}
+
+cout << solverSequence << endl;
  
 run();
 cout << "\nDESIGN ran!\n" << endl;
@@ -77,22 +79,22 @@ setOption("switchDes","OFFDESIGN");
 autoSolverSetup();
 
 solverSequence.remove("cable1");
-//solverSequence.remove("cable2");
-//solverSequence.remove("cable3");
+solverSequence.remove("cable2");
+solverSequence.remove("cable3");
 solverSequence.remove("bus1");
-//solverSequence.remove("bus2");
-//solverSequence.remove("bus3");
-//solverSequence.remove("bus4");
-//solverSequence.remove("bus5");
+solverSequence.remove("bus2");
+solverSequence.remove("bus3");
+solverSequence.remove("bus4");
+solverSequence.remove("bus5");
 
 solverSequence.append("cable1");
-//solverSequence.append("cable2");
-//solverSequence.append("cable3");
+solverSequence.append("cable2");
+solverSequence.append("cable3");
 solverSequence.append("bus1");
-//solverSequence.append("bus2");
-//solverSequence.append("bus3");
-//solverSequence.append("bus4");
-//solverSequence.append("bus5");
+solverSequence.append("bus2");
+solverSequence.append("bus3");
+solverSequence.append("bus4");
+solverSequence.append("bus5");
 
 Independent AtmW{varName = "TurbineAtm.W";}
 solver.addIndependent("AtmW");

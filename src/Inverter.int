@@ -26,8 +26,8 @@ class Inverter extends Element {
 	//------------------------------------------------------------
 	
 	ComplexNumber Sac;
-	ComplexNumber Idc;
-	ComplexNumber Iac;
+	//ComplexNumber Idc;
+	//ComplexNumber Iac;
 	ComplexNumber Vac;
 	ComplexNumber Vdc;
 	
@@ -154,6 +154,32 @@ class Inverter extends Element {
 		//autoSetup=TRUE;
 	}
 
+	Independent dc_current{
+		varName = "Idc";
+		description = "Varies the EP_I current so Pout = Pin / Eff";
+		autoSetup = TRUE;
+	}
+
+	Dependent input_pwr{
+		eq_lhs = "EP_O.S.r / Eff";
+		eq_rhs = "EP_I.S.r";
+		description = "Forces input power to match output power and efficiency";
+		autoSetup = TRUE;
+	}
+
+	Independent ac_current{
+		varName = "Iac";
+		description = "Varies real portion of AC current to match output bus voltage";
+		autoSetup = TRUE;
+	}
+
+	Dependent bus_voltage{
+		eq_lhs = "EP_I.V.r * m";
+		eq_rhs = "EP_O.V.r";
+		description = "Forces real voltage at output to equal voltage at input time modulation factor";
+		autoSetup = TRUE;
+	}
+
 	//------------------------------------------------------------
 	// ******* VARIABLE CHANGED METHODOLOGY *******
 	//------------------------------------------------------------
@@ -169,12 +195,14 @@ class Inverter extends Element {
 	//------------------------------------------------------------
 	//   ******* PERFORM ENGINEERING CALCULATIONS *******
 	//------------------------------------------------------------
-	real Vin;
-	real pwrIn;
-	real Iin;
+	real Idc;
+	Idc = 1000.;
+	real Iac;
+	Iac = 1000.;
+	real m;
+	m = 1;
 	
 	void calculate() {
-		pwrOut = EP_O.S.rRMS;
 		
 		if (switchDes == "DESIGN" ){
 			/****************************
@@ -197,14 +225,11 @@ class Inverter extends Element {
 		}
 		Eff = effBase;*/
 		Eff = effDes;
-		Vin = EP_I.V.r;
-		pwrIn = pwrOut / Eff;
-		Iin = pwrIn / Vin;
 
 		//EP_O.frequency = frequency;
 		EP_O.frequency = EP_I.frequency;
-		EP_O.setIVRMS(EP_O.I.r,EP_O.I.j,EP_O.V.r,EP_O.V.j);
-		EP_I.setIVRMS(Iin,EP_I.I.j,EP_I.V.r,EP_I.V.j);
+		EP_O.setIVRMS(Iac,EP_O.I.j,EP_O.V.r,EP_O.V.j);
+		EP_I.setIVRMS(Idc,EP_I.I.j,EP_I.V.r,EP_I.V.j);
 		//EP_I.setIVRMS(0,0,EP_O.V.mag * sqrt(2),0);
 
 
