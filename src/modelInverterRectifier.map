@@ -8,9 +8,6 @@ Subelement InverterRectifierMap S_map{
     // default design point location
     pwrMapDes = .75;
 
-    // resulting performance
-    //effMap = 
-
     //Note: This data is based off of a maximum operating torque of 350 N-m
 
     Table TB_eff(real pwrMap){

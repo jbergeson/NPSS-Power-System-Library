@@ -55,11 +55,6 @@ class Generator extends Element {
 		description = "Resistance of Generator (based on efficiency)";
 	}
 
-	real Ireal {
-		value = 1000.;  IOstatus = "output"; units = "A";
-		description = "Current sent to bus, drives bus voltage equal to Vbus_LL";
-	}
-
 	real Loss_j {
 		value = 0; IOstatus="output"; units="kW";
 		description = "Generator Loss";
@@ -124,8 +119,6 @@ class Generator extends Element {
 		value = 0; IOstatus="input"; units="V";
 		description = "Bus voltage (off-design)";
 	} 
-
-	
 	
 	//------------------------------------------------------------
 	//   ******* OPTION VARIABLE SETUP *******
@@ -192,17 +185,6 @@ class Generator extends Element {
 		eq_rhs = "trq";
 	}
 
-	Independent real_current{
-		varName = "Ireal";
-		description = "Varies the real current to hit the desired voltage";
-		//autoSetup = TRUE;
-	}
-
-	Dependent voltage_balance{
-		eq_lhs = "Vbus_LL";
-		eq_rhs = "EP_O.V.r";
-		//autoSetup = TRUE;
-	}
 	//------------------------------------------------------------
 	// ******* VARIABLE CHANGED METHODOLOGY *******
 	//------------------------------------------------------------

@@ -24,8 +24,45 @@ fine, imprisonment, or both.
 #include <InterpIncludes.ncp>
 
 class Bus extends Element{
-	
+
 	//------------------------------------------------------------
+	//     ******* DOCUMENTATION *******
+	//------------------------------------------------------------
+	
+	title = "";
+	
+	description = isA() + "is a bus element that controls the voltages at each port to 
+	drive the sum of the currents to zero.";
+	
+	usageNotes = isA() + "
+	-Add this element any time you are connecting two electrical elements together.
+	It will set the voltages in the system and balance everything out.
+	";
+	
+	background = "";
+
+	//------------------------------------------------------------
+	//     ******* SETUP VARIABLES ********
+	//------------------------------------------------------------
+
+	ComplexNumber Inet; //This is the sum of the currents going through the node
+	
+	real frequency{
+		value = 60.;  IOstatus = OUTPUT;  units = HERTZ;
+		description = "This needs modification, currently the bus isn't able to pass frequency for AC flows";
+
+	}
+	real VrealRMS{
+		value = 1150.;  IOstatus = OUTPUT;  units = "V";
+		description = "Real portion of the voltage, controlled by the solver to balance real current";
+	}
+
+	real VimagRMS{
+		value = 1000.;  IOstatus = OUTPUT;  units = "V";
+		description = "Imaginary portion of the voltage, controlled by the solver to balance imaginary current";
+	}
+	
+//------------------------------------------------------------
 //   ******* OPTION VARIABLE SETUP *******
 //------------------------------------------------------------
 
@@ -74,35 +111,30 @@ class Bus extends Element{
 		autoSetup = TRUE;
 		indepRef = "1200";
 		
-		description = "Varies the volume total pressure";
+		description = "Varies the real portion of port voltage";
 	}
 	/*
 	Independent ind_Vimag { 
 		varName = "VimagRMS"; 
 		autoSetup = TRUE;
 		indepRef = "1200";
-		description = "Varies the volume total specific enthalpy";
+		description = "Varies the imaginary portion of port voltage";
 	}
 	*/
 	Dependent dep_Ireal{
 		eq_lhs = "Inet.rRMS";  
 		eq_rhs = "0.0";
 		autoSetup = TRUE;
+		description = "Forces the real currents into the bus to equal the real currents out of it";
 	}
 	/*
 	Dependent dep_Iimag{
 		eq_lhs = "Inet.jRMS";  
 		eq_rhs = "0.";
 		autoSetup = TRUE;
+		description = "Forces the imaginary currents into the bus to equal the imaginary currents out of it";
 	}
 	*/
-	
-	ComplexNumber Inet;
-	
-	real frequency;
-	real VrealRMS;
-	VrealRMS = 1118.;
-	real VimagRMS;
 	
 	//------------------------------------------------------------
 	// ******* VARIABLE CHANGED METHODOLOGY *******
@@ -113,10 +145,8 @@ class Bus extends Element{
     if ( name == "switchDes" ) {
 
       if ( switchDes == "DESIGN" ) {
-		  //hello
       }   
       else if ( switchDes == "OFFDESIGN" ) {
-        //hi
       }
     }
   }
@@ -133,8 +163,9 @@ class Bus extends Element{
 		//----------------------------------------------------------
 		
 		//set initial value of net current to be zero
-
 		Inet.setrj( 0., 0. );
+		
+		//sum currents over all ports (ideally, all ports are input ports, however, we don't have negative current going away in port yet)
 		int i;
 		for (i=0; i<Eports.entries(); i = i + 1) {
 			
@@ -158,13 +189,13 @@ class Bus extends Element{
 	// ******* PREPASS FUNCTION *******
 	//------------------------------------------------------------
 	void prePass() {
-	    //---------------------------------------------------
+	  //---------------------------------------------------
 		// push the voltage from the solver out to the ports
 		//---------------------------------------------------
-        int i;		
-		for (i=0; i<Eports.entries(); i = i + 1) {
+    int i;		
+		for (i=0; i<Eports.entries(); i = i + 1) {  //Need to find a way to push a port's frequency properly, need to vary VimagRMS as well
 			Eports[i]->frequency= frequency;	
-			Eports[i]->setIVRMS(0., 0., VrealRMS, VimagRMS);
+			Eports[i]->setIVRMS(0., 0., VrealRMS, 0);
 			
 		}
 	}

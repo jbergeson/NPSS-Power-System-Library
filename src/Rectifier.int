@@ -6,7 +6,6 @@
 // * March 18, 2019
 // ****************************************************************************
 
-//#include <InterpIncludes.ncp>
 class Rectifier extends Element {
 	
 	//------------------------------------------------------------
@@ -24,54 +23,64 @@ class Rectifier extends Element {
 	//------------------------------------------------------------
 	//     ******* SETUP VARIABLES ********
 	//------------------------------------------------------------
-	
-	ComplexNumber Sdc;
-	//ComplexNumber Idc;
-	//ComplexNumber Iac;
-	ComplexNumber Vdc;
 		
 	real Eff {
-		value = 1.0; IOstatus="input"; units= NONE;
+		value = 1.0; IOstatus=INPUT; units= NONE;
 		description = "Efficiency of the rectifier";
 	}
 
 	real effBase {
-		value = 1.;  IOstatus = "output";  units = "none";
+		value = 1.;  IOstatus = OUTPUT;  units = NONE;
 		description = "Adiabatic efficiency.  Calculated and set by S_map socket during off design.";
 	}
 
 	real effDes {
-		value = 1.;  IOstatus = "input";  units = "none";
+		value = 1.;  IOstatus = INPUT;  units = NONE;
 		description = "Adiabatic efficiency at design point.";
 	}
 	
 	real frequency {
-		value = 60.; IOstatus="input"; //units=;
+		value = 60.; IOstatus=INPUT;  units = HERTZ;
 		description = "Frequency of AC output power";
 	}
 
+	real Iac{
+		value = 1000.;  IOstatus = OUTPUT;  units = AMP;
+		description = "This is the real part of the current on the AC (output) side of the inverter, and iti is varied by the solver";
+	}
+
+	real Idc{
+		value = 1000.;  IOstatus = OUTPUT;  units = AMP;
+		description = "This is the current on the DC (input) side of the inverter, and it is varied by the solver";
+	}
+
 	real Iimag {
-		value = 1.;  IOstatus = "output";  units = "none";
+		value = 1.;  IOstatus = OUTPUT;  units = NONE;
 		description = "Solver independent to vary imaginary portion of input current";
 	}
 
+	real mod_factor{
+		value = 1.;  IOstatus = INPUT;  units = NONE;
+		description = "This is the modulation factor that relates the magnitude of the AC current to the magnitude of the DC current";
+	}
+
 	real pwrDes {
-		value = 1.;  IOstatus = "input";  units = "kW";
+		value = 1.;  IOstatus = INPUT;  units = KW;
 		description = "Output power at design";
 	}
 
 	real pwrOut {
-		value = 1.;  IOstatus = "output";  units = "kW";
+		value = 1.;  IOstatus = OUTPUT;  units = KW;
 		description = "Output power";
 	}
 
 	real Vimag {
-		value = -1.; IOstatus="input"; //units=;
+		value = -1.; IOstatus=INPUT;  units = "V";
 		description = "Rectifier Voltage (imaginary)";
 	}
 	
 	real Vreal {
-		value = 1000.; IOstatus="input"; //units=;
+		value = 1000.; IOstatus=INPUT;  units = "V";
 		description = "Rectifier Voltage (real)";
 	}
 	
@@ -84,8 +93,6 @@ class Rectifier extends Element {
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
 	}
-
-	
 
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -118,13 +125,12 @@ class Rectifier extends Element {
     Socket S_map{
 		allowedValues = {"effBase"}
 		description = "Socket to calculate motor map performance";
-		//socketType = "INVERTER_RECTIFIER_MAP";
+		//socketType = "INVERTER_RECTIFIER_MAP"; //this is the socketType the map should be, however, this socketType does not yet exist
 		socketType = "TURBINE_EFFICIENCY_MAP";
 	}
 
     // TABLES
 
-	
 	//------------------------------------------------------------
 	//  ******  ADD SOLVER INDEPENDENTS & DEPENDENTS  ******
 	//------------------------------------------------------------
@@ -133,6 +139,7 @@ class Rectifier extends Element {
 		eq_rhs="EP_I.VLN.phaseDeg";
 		eq_lhs="EP_I.I.phaseDeg";
 		//autoSetup=TRUE;
+		description = "Forces the phase angle on the voltage and current to be the same";
 	}
 
 	Independent imag_current{
@@ -161,9 +168,10 @@ class Rectifier extends Element {
 	}
 
 	Dependent bus_voltage{
-		eq_lhs = "EP_I.V.mag * m";
+		eq_lhs = "EP_I.V.mag * mod_factor";
 		eq_rhs = "EP_O.V.r";
 		autoSetup = TRUE;
+		description = "Forces the AC and DC voltages to be related by their modulation factor";
 	}
 
 	//------------------------------------------------------------
@@ -182,13 +190,6 @@ class Rectifier extends Element {
 	//   ******* PERFORM ENGINEERING CALCULATIONS *******
 	//------------------------------------------------------------
 
-	real Idc;
-	Idc = 1000.;
-	real Iac;
-	Iac = 1000.;
-	real m;
-	m = 1;
-
 	void calculate() {
 
 		EP_O.frequency = 0.;
@@ -200,9 +201,7 @@ class Rectifier extends Element {
 		if (switchDes == "DESIGN" ){
 			/****************************
 			On-design
-			****************************/
-				
-			
+			****************************/			
 		}	
 		else{
 			//*****************************
@@ -218,8 +217,6 @@ class Rectifier extends Element {
 			effBase = effDes;
 		}
 		Eff = effBase;
-		//Eff = effDes;
-
 	}
 }
 

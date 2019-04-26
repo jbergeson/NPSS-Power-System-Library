@@ -6,7 +6,6 @@
 // * March 18, 2019
 // ****************************************************************************
 
-//#include <InterpIncludes.ncp>
 class Inverter extends Element {
 	
 	//------------------------------------------------------------
@@ -25,54 +24,63 @@ class Inverter extends Element {
 	//     ******* SETUP VARIABLES ********
 	//------------------------------------------------------------
 	
-	ComplexNumber Sac;
-	//ComplexNumber Idc;
-	//ComplexNumber Iac;
-	ComplexNumber Vac;
-	ComplexNumber Vdc;
-	
 	real Eff {
-		value = 1.0; IOstatus="input"; units=NONE;
+		value = 1.0; IOstatus=INPUT; units=NONE;
 		description = "Efficiency of the inverter";
 	}
 
 	real effBase {
-		value = 1.;  IOstatus = "output";  units = NONE;
+		value = 1.;  IOstatus = OUTPUT;  units = NONE;
 		description = "Adiabatic efficiency.  Calculated and set by S_map socket during off design.";
 	}
 
 	real effDes {
-		value = 1.;  IOstatus = "input";  units = NONE;
+		value = 1.;  IOstatus = INPUT;  units = NONE;
 		description = "Adiabatic efficiency at design point.";
 	}
 	
 	real frequency {
-		value = 60.; IOstatus="input"; //units=;
+		value = 0.; IOstatus=INPUT; units = HERTZ;
 		description = "Frequency of AC output power";
 	}
 
+	real Iac{
+		value = 1000.;  IOstatus = OUTPUT;  units = AMP;
+		description = "This is the real part of the current on the AC (output) side of the inverter, and iti is varied by the solver";
+	}
+
+	real Idc{
+		value = 1000.;  IOstatus = OUTPUT;  units = AMP;
+		description = "This is the current on the DC (input) side of the inverter, and it is varied by the solver";
+	}
+
 	real Iimag {
-		value = 1.;  IOstatus = "output";  units = "none";
+		value = 1.;  IOstatus = OUTPUT;  units = NONE;
 		description = "Solver independent to vary imaginary portion of input current";
 	}
 
+	real mod_factor{
+		value = 1.;  IOstatus = INPUT;  units = NONE;
+		description = "This is the modulation factor that relates the magnitude of the AC current to the magnitude of the DC current";
+	}
+
 	real pwrDes {
-		value = 1.;  IOstatus = "input";  units = "kW";
+		value = 1.;  IOstatus = INPUT;  units = KW;
 		description = "Output power at design";
 	}
 
 	real pwrOut {
-		value = 1.;  IOstatus = "output";  units = "kW";
+		value = 1.;  IOstatus = OUTPUT;  units = KW;
 		description = "Output power";
 	}
 	
 	real Vimag {
-		value = 1.; IOstatus="input"; //units=;
+		value = 1.; IOstatus=INPUT;  units = "V";
 		description = "Rectifier Voltage (imaginary)";
 	}
 
 	real Vreal {
-		value = 1000.; IOstatus="input"; //units=;
+		value = 1000.; IOstatus=INPUT;  units = "V";
 		description = "Rectifier Voltage (real)";
 	}
 
@@ -85,10 +93,6 @@ class Inverter extends Element {
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
 	}
-	
-	
-	
-	
 	
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********
@@ -121,7 +125,7 @@ class Inverter extends Element {
     Socket S_map{
 		allowedValues = {"effBase"}
 		description = "Socket to calculate motor map performance";
-		//socketType = "INVERTER_RECTIFIER_MAP";
+		//socketType = "INVERTER_RECTIFIER_MAP";  //this should be the socketType, however, it does not yet exist as a socketType
 		socketType = "TURBINE_EFFICIENCY_MAP";
 	}
 
@@ -163,7 +167,7 @@ class Inverter extends Element {
 	}
 
 	Dependent bus_voltage{
-		eq_lhs = "EP_I.V.r * m";
+		eq_lhs = "EP_I.V.r * mod_factor";
 		eq_rhs = "EP_O.V.mag";
 		description = "Forces real voltage at output to equal voltage at input time modulation factor";
 		autoSetup = TRUE;
@@ -176,7 +180,7 @@ class Inverter extends Element {
 	void variableChanged(string name, any oldVal){
 		if(name == "switchDes"){
 			if(switchDes == OFFDESIGN){
-				effDes.IOstatus = "output";
+				effDes.IOstatus = OUTPUT;
 			}
 		}
 	} // end variableChanged()
@@ -184,12 +188,6 @@ class Inverter extends Element {
 	//------------------------------------------------------------
 	//   ******* PERFORM ENGINEERING CALCULATIONS *******
 	//------------------------------------------------------------
-	real Idc;
-	Idc = 1000.;
-	real Iac;
-	Iac = 1000.;
-	real m;
-	m = 1;
 	
 	void calculate() {
 
@@ -203,8 +201,6 @@ class Inverter extends Element {
 			/****************************
 				On-design
 			****************************/
-				
-			
 		}	
 		else{
 			//*****************************
@@ -219,11 +215,6 @@ class Inverter extends Element {
 			effBase = effDes;
 		}
 		Eff = effBase;
-		//Eff = effDes;
-
-		
-
-
 	}
 }
 

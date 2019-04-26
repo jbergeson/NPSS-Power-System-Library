@@ -128,7 +128,7 @@ GroupBlock Electrical {
 		titleBody = "\n Busses"; 
 		compType = "Bus"; 
 		compTypeFormat = "????????????"; 
-		compAttr = {"EP_I.S.r","EP_O.S.r", "EP_I.V.r", "EP_O.V.r","EP_I.I.r", "EP_O.I.r", "EP_I.frequency", "EP_O.frequency"}; 
+		compAttr = {"EP_I.S.r","EP_O.S.r", "EP_I.V.r", "EP_O.V.r","EP_I.I.r", "EP_O.I.r", "EP_I.frequency", "EP_O.frequency", "EP_I.I.j", "EP_O.I.j", "EP_I.V.j", "EP_O.V.j"}; 
 		//showColHeader=FALSE; 	
    }
 

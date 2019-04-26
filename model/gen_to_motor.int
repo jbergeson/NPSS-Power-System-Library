@@ -9,7 +9,7 @@
 //					Power System Analysis and Design Page 67
 //
 //-------------------------------------------------------------------------------------------------
-// create a power source class 
+
 setThermoPackage("GasTbl");
 
 Element FlowStart TurbineAtm{
@@ -33,7 +33,7 @@ Element FlowEnd Turbinedump{
 }
 
 Element Shaft Turbine_Shaft {
-	Nmech=4000;   // rpm
+	Nmech=4000;  
 	ShaftInputPort turbinelink;
     ShaftInputPort genlink;	
 }
@@ -42,82 +42,71 @@ Element Generator generator{
     Vbus_LL = 1200.;
     effDes = .96;
     SpecificPower = 13.;
-    frequency = 400.;
+    //frequency = 400.;
     #include <STARCABLmotorGenerator.map>
 }
 /*
 Element Bus bus0{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1175.;
 }
 */
 
 Element BasicLoad cable1{
 	R = 0.017449748; 
     length = 28.3464;
-	L = .0000796 * length * 3.28 / (60. * 2. * PI * 1000.);
-    void postexecute() {
-       //cout << "cable1 in: " << EP_I.I.r << " cable1 out: " << EP_O.I.r << endl;
-    }   
+	L = .0000796 * length * 3.28 / (60. * 2. * PI * 1000.); 
 }
 
 Element Bus bus1{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1175.;
 }
 
 Element Rectifier rectifier{
     effDes = .95;
     pwrDes = 800.;
-    frequency = 400.;
+    //frequency = 400.;
     #include <modelInverterRectifier.map>
 }
 
 Element Bus bus2{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1150.;
 }
 
 Element BasicLoad cable2{
 	R = 0.017449748;    
-    void postexecute() {
-       //cout << "cable2 in: " << EP_I.I.r << " cable2 out: " << EP_O.I.r << endl;
-    }
+    length = 28.3464;
+	L = .0000796 * length * 3.28 / (60. * 2. * PI * 1000.);
 }
 
 Element Bus bus3{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1100.;
 }
 
 Element Inverter inverter{
     effDes = .96;
     pwrDes = 850.;
-    frequency = 400.;
+    //frequency = 400.;
     #include <modelInverterRectifier.map>
 }
 
 Element Bus bus4{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1050.;
 }
 
 Element BasicLoad cable3{
-	R = 0.017449748;    
-    void postexecute() {
-       //cout << "cable3 in: " << EP_I.I.r << " cable3 out: " << EP_O.I.r << endl;
-    }
+	R = 0.017449748;   
+    length = 28.3464;
+	L = .0000796 * length * 3.28 / (60. * 2. * PI * 1000.); 
 }
 
 Element Bus bus5{
     ElectricInputPort EP_I;
     ElectricOutputPort EP_O;
-    //VrealRMS = 1000.;
 }
 
 Element Motor motor{
@@ -126,7 +115,6 @@ Element Motor motor{
    SpecificPower = 13.;
    trq = 55144.;
    //frequency = 400.;
-   //Vreal = 1000.; 
    #include <STARCABLmotorGenerator.map>
 }
 
@@ -143,6 +131,8 @@ setOption("ElectricPowerType","AC3");
 //--------------------------------------------------------
 // link it up
 //--------------------------------------------------------
+
+// Electrical port connections
 linkPortI( "generator.EP_O", "cable1.EP_I");
 linkPortI("cable1.EP_O", "bus1.EP_I");
 linkPortI("bus1.EP_O", "rectifier.EP_I");
@@ -155,10 +145,12 @@ linkPortI("bus4.EP_O", "cable3.EP_I");
 linkPortI("cable3.EP_O", "bus5.EP_I");
 linkPortI("bus5.EP_O", "motor.EP_I");
 
+// Shaft port connections
 linkPorts("Turb.Sh_O", "Turbine_Shaft.turbinelink", "turbinepwr");
 linkPorts("generator.Sh_O", "Turbine_Shaft.genlink", "generatorpwr");
 linkPorts("motor.Sh_O", "motorShaft.motorlink", "motorpwr");
 
+// Flow port connections
 linkPorts("TurbineAtm.Fl_O", "Turb.Fl_I", "stat1");
 linkPorts("Turb.Fl_O", "Noz.Fl_I", "stat2");
 linkPorts("Noz.Fl_O", "Turbinedump.Fl_I", "stat3");

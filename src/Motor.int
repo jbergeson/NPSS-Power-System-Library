@@ -1,4 +1,4 @@
-// ****************************************************************************
+        // ****************************************************************************
 // * NASA Glenn Research Center
 // * 21000 Brookpark Rd
 // * Cleveland, OH 44135
@@ -28,98 +28,103 @@ class Motor extends Element {
 	//------------------------------------------------------------
 	
 	real Current {
-		value = 1.; IOstatus="input"; units=AMP;
+		value = 1.; IOstatus=INPUT; units=AMP;
 		description = "Current";
 	} 
 
 	real CurrentAngle_Demand {
-		value = 0; IOstatus="output"; units="kW";
+		value = 0; IOstatus=OUTPUT; units=KW;
 		description = "Current Angle for the motor";
 	}
 	
 	real Eff{
-		value=1.; IOstatus="output"; units="none";
+		value=1.; IOstatus=OUTPUT; units=NONE;
 		description = "Adiabatic efficiency.  Equal to effDes during design, and effBase during off design.";
 	}
 
 	real effBase{
-		value = 1.;  IOstatus ="output";  units = "none";
+		value = 1.;  IOstatus =OUTPUT;  units = NONE;
 		description = "Adiabatic efficiency.  Calculated and set by S_map socket during off design.";
 		
 	}
 
 	real effDes{
-		value = 1.;  IOstatus = "input";  units = "none";
+		value = 1.;  IOstatus = INPUT;  units = NONE;
 		description = "Adiabatic efficiency at design point.";
 	} 
+
+	real frequency {
+		value = 0; IOstatus="input"; units=DEG;
+		description = "Generator Frequency";
+	}
 	
 	real Loss_j {
-		value = 0; //IOstatus=OUTPUT; units="kW";
+		value = 0; IOstatus=OUTPUT; units=KW;
 		description = "Motor Loss";
 	}
 
 	real Loss_r {
-		value = 0; //IOstatus=OUTPUT; units="kW";
+		value = 0; IOstatus=OUTPUT; units=KW;
 		description = "Motor Loss";
 	}
 
 	real Mass {
-		value=1.; IOstatus="output"; units="kg";
+		value=1.; IOstatus=OUTPUT; units="kg";
 		description = "Mass output of the motor";
 	}
 
 	real motorResistance {
-		value = 1.; IOstatus="output"; units= "kW";
+		value = 1.; IOstatus=OUTPUT; units= KW;
 		description = "Resistance of the motor based on losses";
 	} 
 
 	real Ndes{
-		value = 1.;  IOstatus = "output";  units = "rpm";
+		value = 1.;  IOstatus = OUTPUT;  units = RPM;
 		description = "rotational speed at design";
 	}
 
 	real Pout{
-		value = 5261.;  IOstatus = "output";  units = "kW";
+		value = 5261.;  IOstatus = OUTPUT;  units = KW;
 		description = "Power out of the motor";
 	}
 
 	real Pin{
-		value = 1.;  IOstatus = "output";  units = "kW";
+		value = 1.;  IOstatus = OUTPUT;  units = KW;
 		description = "Power in to the motor";
 	}
 
 	real powerfactor {
-		value = 1; IOstatus="output"; units="kW";
+		value = 1; IOstatus=OUTPUT; units=KW;
 		description = "Motor Loss";
 	}
 	
 	real SpecificPower {
-		value = 13; IOstatus="input"; //units=;
+		value = 13; IOstatus=INPUT; //units=;
 		description = "Power to Weight ratio for the motor";
 	}
 	
 	real Speed{
-		value=1.; IOstatus="input"; units=RPM;
+		value=1.; IOstatus=INPUT; units=RPM;
 		description = "Propulsor Speed";
 	}
 
 	real trq{
-		value=1.; IOstatus="output"; units=FT_LBF;
+		value=1.; IOstatus=OUTPUT; units=FT_LBF;
 		description = "Propulsor Torque";
 	}
 
 	real trqDes{
-		value = 1.;  IOstatus = "output";  units = FT_LBF;
+		value = 1.;  IOstatus = OUTPUT;  units = FT_LBF;
 		description = "Torque at design";
 	}
 
 	real trqTemp{
-		value = 1.;  IOstatus = "output";  units = FT_LBF;
+		value = 1.;  IOstatus = OUTPUT;  units = FT_LBF;
 		description = "This is the same as trq. The map requires a variable named 'trqTemp' because generator uses a solver to drive the trq = trqTemp";
 	}
 
 	real Vin{
-		value = 1.;  IOstatus = "output";  units = "V";
+		value = 1.;  IOstatus = OUTPUT;  units = "V";
 		description = "Voltage into the motor";
 	}
 	
@@ -132,6 +137,9 @@ class Motor extends Element {
 		description = "Determines if the element is in design or off-design mode";
 		rewritableValues = FALSE;
 	}
+
+	real V;
+	real I;
 	
 	//------------------------------------------------------------
 	// ****** SETUP PORTS, FLOW STATIONS, SOCKETS, TABLES ********

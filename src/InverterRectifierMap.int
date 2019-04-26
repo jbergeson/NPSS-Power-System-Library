@@ -46,11 +46,11 @@ class InverterRectifierMap extends Subelement{
         description = "Efficiency of motor or generator at design point. Returned from unscaled map TB_eff at trqMapDes and NmapDes.";
     }
     real pwrMap{
-        value = 1.;  IOstatus = OUTPUT;  //units = KILLOWATT;
+        value = 1.;  IOstatus = OUTPUT;  units = KW;
         description = "Power scaled to map.  Equal to pwrMapDes during design, and calculated as pwrOut / s_pwrDes during off-design.";
     }
     real pwrMapDes{
-        value = 1.;  IOstatus = INPUT;  //units = KILLOWATT;
+        value = 1.;  IOstatus = INPUT;  units = KW;
         description = "Power scaled to map at design point.  Set by map itself.";
     }
     real s_effDes{
@@ -92,7 +92,7 @@ class InverterRectifierMap extends Subelement{
 
     // SOCKETS
 
-    addInterface("TURBINE_EFFICIENCY_MAP"); // compatible with the Motor and Generator elements' S_map socketType
+    addInterface("TURBINE_EFFICIENCY_MAP"); // compatible with the Motor and Generator elements' S_map socketType (should be INVERTER_RECTIFIER_MAP, but that socketType doesn't yet exist)
 
     Socket TB_eff{
         description = "Efficiency vs. power.  A function or table with the name TB_eff must be declared at the subelement scope in order to fill this socket. The format is TB_eff(real pwrMap), and returns effMap.";
